@@ -107,6 +107,7 @@ function receivedMessage(event) {
   }
 
   if (messageText) {
+    
         sendTextMessage(senderID,"Searching for available flights according to given parameters!");
         return;
   }
