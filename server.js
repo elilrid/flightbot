@@ -4,10 +4,10 @@ var fs = require("fs");
 
 app.get('/getFlights', function (req, res) {
    res.status(code || 500).json({"error": message});
-   /*fs.readFile( __dirname + "/" + "flights.json", 'utf8', function (err, data) {
+   fs.readFile( __dirname + "/" + "flights.json", 'utf8', function (err, data) {
        console.log( data );
        res.end( data );
-   });*/
+   });
 })
 
 
