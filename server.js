@@ -10,7 +10,9 @@ app.get('/getFlights', function (req, res) {
    });
 })
 
-
+app.post('/postFlights', function (req, res) {
+   res.status(200).json({"success": true});
+})
 
 var server = app.listen(process.env.PORT || 8080, function () {
 
