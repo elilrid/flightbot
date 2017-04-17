@@ -9,6 +9,7 @@ var fs = require("fs");
 
 
 app.get('/webhook', function(req, res) {
+  /*
   if (req.query['hub.mode'] === 'subscribe' &&
       req.query['hub.verify_token'] === VALIDATION_TOKEN) {
     console.log("Validating webhook");
@@ -16,7 +17,9 @@ app.get('/webhook', function(req, res) {
   } else {
     console.error("Failed validation. Make sure the validation tokens match.");
     res.sendStatus(403);
-  }
+  }*/
+
+  res.status(200).send(req.query['hub.challenge']);
 });
 
 /*
