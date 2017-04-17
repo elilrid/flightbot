@@ -6,7 +6,8 @@ var request = require('request');
 var app = express();
 var fs = require("fs");
 
-
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
 app.get('/webhook', function(req, res) {
   /*
@@ -78,6 +79,11 @@ app.get('/getFlights', function (req, res) {
 })
 
 app.post('/postFlights', function (req, res) {
+   res.status(200).json({"success": true});
+})
+
+app.get('/policy', function (req, res) {
+   res.render('policy');
    res.status(200).json({"success": true});
 })
 
