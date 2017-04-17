@@ -3,14 +3,16 @@ var app = express();
 var fs = require("fs");
 
 app.get('/getFlights', function (req, res) {
-   fs.readFile( __dirname + "/" + "flights.json", 'utf8', function (err, data) {
+   res.status(code || 500).json({"error": message});
+   /*fs.readFile( __dirname + "/" + "flights.json", 'utf8', function (err, data) {
        console.log( data );
        res.end( data );
-   });
+   });*/
 })
 
 
-var server = app.listen(8081, function () {
+
+var server = app.listen(process.env.PORT || 8080, function () {
 
   var host = server.address().address
   var port = server.address().port
