@@ -1,8 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var config = require('config');
-//var https = require('https');
-//var request = require('request');
+var https = require('https');
+var request = require('request');
 var app = express();
 var fs = require("fs");
 
