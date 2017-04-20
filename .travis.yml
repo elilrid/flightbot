@@ -5,7 +5,3 @@ node_js:
 branches:
   only:
   - master
-deploy:
-  provider: heroku
-  api_key:
-    secure: "64f58d54-b916-41ec-973c-b3f6e1695532"
