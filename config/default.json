@@ -1,6 +1,6 @@
 {
     "appSecret": "",
-    "pageAccessToken": "",
-    "validationToken": "EAADZBTjyxKz8BANHflAkSqxDSETuJJ3UnlZCK7UbZBZBHDGqJ7vLzoCrCRAW9CsQmMBOgxdFfcVc4bMQRggfEqRLD3u7HKvSOZAqFUIb6g5CO7IVJMqyfiOf3lvx0flNfRA6kZCbWwZCQvhhPLxvo89ZA6zWcp3l5t18faVGsspV5wZDZD",
+    "pageAccessToken": "EAADZBTjyxKz8BANHflAkSqxDSETuJJ3UnlZCK7UbZBZBHDGqJ7vLzoCrCRAW9CsQmMBOgxdFfcVc4bMQRggfEqRLD3u7HKvSOZAqFUIb6g5CO7IVJMqyfiOf3lvx0flNfRA6kZCbWwZCQvhhPLxvo89ZA6zWcp3l5t18faVGsspV5wZDZD",
+    "validationToken": "fli-bot",
     "serverURL": ""
 }

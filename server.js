@@ -9,8 +9,14 @@ var fs = require("fs");
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
+const VALIDATION_TOKEN = config.get('validationToken');
+
+console.log("validation token is " + VALIDATION_TOKEN);
+console.log("page access token is " + PAGE_ACCESS_TOKEN);
+
 app.get('/flights', function(req, res) {
-  /*
+
   if (req.query['hub.mode'] === 'subscribe' &&
       req.query['hub.verify_token'] === VALIDATION_TOKEN) {
     console.log("Validating webhook");
@@ -18,9 +24,9 @@ app.get('/flights', function(req, res) {
   } else {
     console.error("Failed validation. Make sure the validation tokens match.");
     res.sendStatus(403);
-  }*/
+  }
 
-  res.status(200).send(req.query['hub.challenge']);
+  //res.status(200).send(req.query['hub.challenge']);
 });
 
 /*
@@ -107,7 +113,7 @@ function receivedMessage(event) {
   }
 
   if (messageText) {
-    
+
         sendTextMessage(senderID,"Searching for available flights according to given parameters!");
         return;
   }
