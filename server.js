@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var config = require('config');
 var https = require('https');
 var request = require('request');
+var crypto = require('crypto');
 
 var app = express();
 app.set('view engine', 'ejs');
