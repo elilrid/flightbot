@@ -1,11 +1,15 @@
+/* jshint node: true, devel: true */
+'use strict';
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var config = require('config');
 var https = require('https');
 var request = require('request');
-var app = express();
 
+var app = express();
 app.set('view engine', 'ejs');
+app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
 
 const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
