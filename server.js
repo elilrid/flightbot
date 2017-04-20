@@ -4,7 +4,6 @@ var config = require('config');
 var https = require('https');
 var request = require('request');
 var app = express();
-var fs = require("fs");
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -40,7 +39,7 @@ app.post('/flights', function (req, res) {
   var data = req.body;
   console.log("a request has come!");
   console.log("request " + req);
-  console.log("response " + res);
+  console.log("data " + data);
   // Make sure this is a page subscription
   if (data.object == 'page') {
     // Iterate over each entry
