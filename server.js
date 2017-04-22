@@ -78,9 +78,11 @@ const actions = {
     }
   },
   findFlights({context, entities}) {
+    console.log('findFlights() : context ' + context + ' entities : ' + entities);
     var departure = entityValue(entities, 'location', 1);
     var arrival = entityValue(entities, 'location',2);
     var date = entityValue(entities, 'datetime',1);
+    console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
     if (departure && arrival && date) {
       context.foundFlights = 'not yet implemented'; // we should call a weather API here
       delete context.missingArgument;
