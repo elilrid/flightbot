@@ -79,7 +79,7 @@ const actions = {
     }
   },
   findFlights({context, entities}) {
-    var departure = firstEntityValue(entities, 'location:departure');
+    /*var departure = firstEntityValue(entities, 'location:departure');
     var arrival = firstEntityValue(entities, 'location:arrival');
     var date = firstEntityValue(entities, 'datetime');
     if (departure && arrival && date) {
@@ -88,7 +88,9 @@ const actions = {
     } else {
       context.missingArgument = true;
       delete context.foundFlights;
-    }
+    }*/
+    context.foundFlights = 'not yet implemented'; // we should call a weather API here
+    delete context.missingArgument;
     return context;
   },
   // You should implement your custom actions here
