@@ -49,12 +49,11 @@ const findOrCreateSession = (fbid) => {
   return sessionId;
 };
 
-const firstEntityValue = (entities, entity) => {
+const entityValue = (entities, entity, order) => {
   const val = entities && entities[entity] &&
     Array.isArray(entities[entity]) &&
     entities[entity].length > 0 &&
-    entities[entity][0].value
-  ;
+    entities[entity][order - 1].value;
   if (!val) {
     return null;
   }
@@ -79,18 +78,18 @@ const actions = {
     }
   },
   findFlights({context, entities}) {
-    /*var departure = firstEntityValue(entities, 'location:departure');
-    var arrival = firstEntityValue(entities, 'location:arrival');
-    var date = firstEntityValue(entities, 'datetime');
+    var departure = entityValue(entities, 'location', 1);
+    var arrival = entityValue(entities, 'location',2);
+    var date = entityValue(entities, 'datetime',1);
     if (departure && arrival && date) {
       context.foundFlights = 'not yet implemented'; // we should call a weather API here
       delete context.missingArgument;
     } else {
       context.missingArgument = true;
       delete context.foundFlights;
-    }*/
-    context.foundFlights = 'not yet implemented'; // we should call a weather API here
-    delete context.missingArgument;
+    }
+    //context.foundFlights = 'not yet implemented'; // we should call a weather API here
+    //delete context.missingArgument;
     return context;
   },
   // You should implement your custom actions here
