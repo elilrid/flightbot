@@ -7,19 +7,90 @@ var config = require('config');
 var https = require('https');
 var request = require('request');
 var crypto = require('crypto');
+var Wit = require('node-wit').Wit;
+var log = require('node-wit').log;
 
 var app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
 
+//tokens for facebook
 const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
 const VALIDATION_TOKEN = config.get('validationToken');
 const APP_SECRET = config.get('appSecret');
 
+const SKYSCANNER_TOKEN = config.get('skyscannerApiKey');
+const WIT_TOKEN = config.get('witApiToken');
+
 console.log("validation token is " + VALIDATION_TOKEN);
 console.log("page access token is " + PAGE_ACCESS_TOKEN);
 
+
+// This will contain all user sessions.
+// Each session has an entry:
+// sessionId -> {fbid: facebookUserId, context: sessionState}
+const sessions = {};
+
+const findOrCreateSession = (fbid) => {
+  let sessionId;
+  // Let's see if we already have a session for the user fbid
+  Object.keys(sessions).forEach(k => {
+    if (sessions[k].fbid === fbid) {
+      // Yep, got it!
+      sessionId = k;
+    }
+  });
+  if (!sessionId) {
+    // No session found for user fbid, let's create a new one
+    sessionId = new Date().toISOString();
+    sessions[sessionId] = {fbid: fbid, context: {}};
+  }
+  return sessionId;
+};
+
+// Our bot actions
+const actions = {
+  send({sessionId}, {text}) {
+    // Our bot has something to say!
+    // Let's retrieve the Facebook user whose session belongs to
+    const recipientId = sessions[sessionId].fbid;
+    if (recipientId) {
+      // Yay, we found our recipient!
+      // Let's forward our bot response to her.
+      // We return a promise to let our bot know when we're done sending
+      return sendTextMessage(recipientId, text);
+    } else {
+      console.error('Oops! Couldn\'t find user for session:', sessionId);
+      // Giving the wheel back to our bot
+      return Promise.resolve()
+    }
+  },
+  findFlights({context, entities}) {
+    var departure = firstEntityValue(entities, 'location:departure');
+    var arrival = firstEntityValue(entities, 'location:arrival');
+    var date = firstEntityValue(entities, 'datetime');
+    if (departure && arrival && date) {
+      context.foundFlights = 'not yet implemented'; // we should call a weather API here
+      delete context.missingArgument;
+    } else {
+      context.missingArgument = true;
+      delete context.foundFlights;
+    }
+    return context;
+  },
+  // You should implement your custom actions here
+  // See https://wit.ai/docs/quickstart
+};
+
+// Setting up our bot
+const wit = new Wit({
+  accessToken: WIT_TOKEN,
+  actions,
+  logger: new log.Logger(log.INFO)
+});
+
+//webhook endpoints
 app.get('/flights', function(req, res) {
 
   if (req.query['hub.mode'] === 'subscribe' &&
@@ -60,9 +131,10 @@ app.post('/flights', function (req, res) {
         if (messagingEvent.message) {
           receivedMessage(messagingEvent);
         }
-        /*if (messagingEvent.optin) {
+        if (messagingEvent.optin) {
           receivedAuthentication(messagingEvent);
-        } else if (messagingEvent.message) {
+        }
+        /*else if (messagingEvent.message) {
           receivedMessage(messagingEvent);
         } else if (messagingEvent.delivery) {
           receivedDeliveryConfirmation(messagingEvent);
@@ -86,6 +158,8 @@ app.post('/flights', function (req, res) {
   }
 });
 
+
+//this function is called when a user sends message from messenger
 function receivedMessage(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -95,37 +169,49 @@ function receivedMessage(event) {
     senderID, recipientID, timeOfMessage);
   console.log(JSON.stringify(message));
 
-  var isEcho = message.is_echo;
   var messageId = message.mid;
   var appId = message.app_id;
   var metadata = message.metadata;
 
+  // We retrieve the user's current session, or create one if it doesn't exist
+  // This is needed for our bot to figure out the conversation history
+  const sessionId = findOrCreateSession(senderID);
+
   // You may get a text or attachment but not both
   var messageText = message.text;
-  //var messageAttachments = message.attachments;
-  var quickReply = message.quick_reply;
-
-  if (isEcho) {
-    // Just logging message echoes to console
-    console.log("Received echo for message %s and app %d with metadata %s",
-      messageId, appId, metadata);
-    return;
-  } else if (quickReply) {
-    var quickReplyPayload = quickReply.payload;
-    console.log("Quick reply for message %s with payload %s",
-      messageId, quickReplyPayload);
-
-    sendTextMessage(senderID, "Quick reply tapped");
-    return;
-  }
+  var messageAttachments = message.attachments;
 
   if (messageText) {
+        //sendTextMessage(senderID,"Searching for available flights according to given parameters!");
 
-        sendTextMessage(senderID,"Searching for available flights according to given parameters!");
+        // Let's forward the message to the Wit.ai Bot Engine
+        // This will run all actions until our bot has nothing left to do
+        wit.runActions(
+          sessionId, // the user's current session
+          text, // the user's message
+          sessions[sessionId].context // the user's current session state
+        ).then((context) => {
+          // Our bot did everything it has to do.
+          // Now it's waiting for further messages to proceed.
+          console.log('Waiting for next user messages');
+
+          // Based on the session state, you might want to reset the session.
+          // This depends heavily on the business logic of your bot.
+          // Example:
+          // if (context['done']) {
+          //   delete sessions[sessionId];
+          // }
+
+          // Updating the user's current session state
+          sessions[sessionId].context = context;
+        })
+        .catch((err) => {
+          console.error('Oops! Got an error from Wit: ', err.stack || err);
+        })
         return;
   }
   else if (messageAttachments) {
-    sendTextMessage(senderID, "Message with attachment received");
+    sendTextMessage(senderID, "Sorry I can only process text messages for now.");
   }
 }
 

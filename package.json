@@ -9,6 +9,7 @@
     "bluebird":"^3.5.0",
     "request-promise":"^4.2.0",
     "lodash":"^4.17.4",
-    "util":"^0.10.3"
+    "util":"^0.10.3",
+    "node-wit":"^4.2.0"
   }
 }
