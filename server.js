@@ -91,7 +91,7 @@ const actions = {
   findFlights({context, entities}) {
 
     var sessionId = context.sessionId;
-    var oldContext = sessions[sessionId];
+    var oldContext = sessions[sessionId].context;
 
     var oldDeparture = oldContext.departure;
     var oldArrival = oldContext.arrival;
