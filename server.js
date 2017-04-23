@@ -95,7 +95,7 @@ const actions = {
     var date = entityValue(entities, 'datetime',1);
     console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
     if (departure && arrival && date) {
-      context.foundFlights = '\nFlights from ' + departure + " to " + arrival + " on " + formatDate(date) ; // we should call a weather API here
+      context.foundFlights = '\nFlights from ' + departure + " to " + arrival + " on " + formatDate(new Date(date)); // we should call a weather API here
       delete context.missingArgument;
     } else {
       context.missingArgument = true;
