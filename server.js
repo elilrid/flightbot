@@ -132,6 +132,12 @@ const actions = {
 
       console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
       context.foundFlights = '\nFlights from ' + departure + " to " + arrival + " on " + formatDate(new Date(date)); // we should call a weather API here
+
+
+      //when everything is OK, clean up data
+      delete context.arrival;
+      delete context.departure;
+      delete context.date;
     }
     return context;
   },
