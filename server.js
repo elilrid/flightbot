@@ -60,6 +60,17 @@ const entityValue = (entities, entity, order) => {
   return typeof val === 'object' ? val.value : val;
 };
 
+function formatDate(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  //var strTime = hours + ':' + minutes + ' ' + ampm;
+  return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
+}
+
 // Our bot actions
 const actions = {
   send({sessionId}, {text}) {
@@ -78,18 +89,13 @@ const actions = {
     }
   },
   findFlights({context, entities}) {
-    for(var i in entities){
-      var key = i;
-      var val = entities[i];
-      console.log("key : " + key + " value : " + val);
-    }
     console.log('findFlights() : context ' + context + ' entities : ' + entities);
-    var departure = entityValue(entities, 'location', 1);
-    var arrival = entityValue(entities, 'location',2);
+    var departure = entityValue(entities, 'departure', 1);
+    var arrival = entityValue(entities, 'arrival',1);
     var date = entityValue(entities, 'datetime',1);
     console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
     if (departure && arrival && date) {
-      context.foundFlights = 'not yet implemented'; // we should call a weather API here
+      context.foundFlights = '\nFlights from ' + departure + " to " + arrival + " on " + formatDate(date) ; // we should call a weather API here
       delete context.missingArgument;
     } else {
       context.missingArgument = true;
