@@ -89,20 +89,50 @@ const actions = {
     }
   },
   findFlights({context, entities}) {
-    console.log('findFlights() : context ' + context + ' entities : ' + entities);
-    var departure = entityValue(entities, 'departure', 1);
-    var arrival = entityValue(entities, 'arrival',1);
-    var date = entityValue(entities, 'datetime',1);
-    console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
-    if (departure && arrival && date) {
-      context.foundFlights = '\nFlights from ' + departure + " to " + arrival + " on " + formatDate(new Date(date)); // we should call a weather API here
-      delete context.missingArgument;
+
+    var sessionId = context.sessionId;
+    var oldContext = sessions[sessionId];
+
+    var oldDeparture = oldContext.departure;
+    var oldArrival = oldContext.arrival;
+    var oldDate = oldContext.date;
+
+    if(oldDeparture == null && entityValue(entities,'departure',1) == null) {
+      context.missingDeparture = true;
+    } else if(oldDeparture == null) {
+      context.departure = entityValue(entities,'departure',1);
+      delete context.missingDeparture;
     } else {
-      context.missingArgument = true;
-      delete context.foundFlights;
+      context.departure = oldDeparture;
+      delete context.missingDeparture;
     }
-    //context.foundFlights = 'not yet implemented'; // we should call a weather API here
-    //delete context.missingArgument;
+    if(oldArrival == null && entityValue(entities,'arrival',1) == null) {
+      context.missingArrival = true;
+    } else if(oldArrival == null) {
+      context.arrival = entityValue(entities,'arrival',1);
+      delete context.missingArrival;
+    } else {
+      context.arrival = oldArrival;
+      delete context.missingArrival;
+    }
+    if(oldDate == null && entityValue(entities,'datetime',1) == null) {
+      context.missingDate = true;
+    } else if(oldDate == null) {
+      context.date = entityValue(entities,'datetime',1);
+      delete context.missingDate;
+    } else {
+      context.date = oldDate;
+      delete context.missingDate;
+    }
+
+    if(context.missingDate == null  && context.missingArrival == null && context.missingDate == null) {
+      var departure = context.departure;
+      var arrival = context.arrival;
+      var date = context.date;
+
+      console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
+      context.foundFlights = '\nFlights from ' + departure + " to " + arrival + " on " + formatDate(new Date(date)); // we should call a weather API here
+    }
     return context;
   },
   // You should implement your custom actions here
@@ -231,6 +261,8 @@ function receivedMessage(event) {
 
   if (messageText) {
         //sendTextMessage(senderID,"Searching for available flights according to given parameters!");
+
+        sessions[sessionId].context.sessionId = sessionId;
 
         // Let's forward the message to the Wit.ai Bot Engine
         // This will run all actions until our bot has nothing left to do
