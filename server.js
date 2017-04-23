@@ -81,7 +81,7 @@ const actions = {
     for(var i in entities){
       var key = i;
       var val = entities[i];
-      console.log("key : " + sub_key + " value : " + val);
+      console.log("key : " + key + " value : " + val);
     }
     console.log('findFlights() : context ' + context + ' entities : ' + entities);
     var departure = entityValue(entities, 'location', 1);
