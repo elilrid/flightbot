@@ -184,6 +184,28 @@ app.post('/flights', function (req, res) {
   }
 });
 
+/*
+ * Authorization Event
+ *
+ * The value for 'optin.ref' is defined in the entry point. For the "Send to
+ * Messenger" plugin, it is the 'data-ref' field. Read more at
+ * https://developers.facebook.com/docs/messenger-platform/webhook-reference/authentication
+ *
+ */
+function receivedAuthentication(event) {
+
+  console.console.log("Received authentication!");
+
+  var senderID = event.sender.id;
+
+
+  // We retrieve the user's current session, or create one if it doesn't exist
+  // This is needed for our bot to figure out the conversation history
+  const sessionId = findOrCreateSession(senderID);
+  sessions[sessionId] = {};
+
+  sendTextMessage(senderID, "Welcome to Flight Bot! I can help you to find flights for you!");
+}
 
 //this function is called when a user sends message from messenger
 function receivedMessage(event) {
