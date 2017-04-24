@@ -282,6 +282,7 @@ const actions = {
 
         })
         .then(function(next, err, detailInfo) {
+          console.log("detailInfo : " + detailInfo);
           if (detailInfo == "") {
             context.noFlight = true;
             delete context.foundFlights;
