@@ -299,7 +299,8 @@ const actions = {
             delete context.departure;
             delete context.date;
           }
-          next();
+          return context;
+          //next();
         });
     } else {
       return context;
