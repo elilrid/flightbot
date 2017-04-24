@@ -242,8 +242,6 @@ function getLocationCode(data) {
 
 function formatFlightMessage(flightInfo) {
   var i, toReturn = "";
-  console.log("asdasd");
-  console.log(flightInfo);
   for (i = 0; i < flightInfo.Quotes.length; i++) {
     var quote = flightInfo.Quotes[i];
     console.log(JSON.stringify(quote));
@@ -256,23 +254,11 @@ function formatFlightMessage(flightInfo) {
     } else {
       toReturn += "Not a Direct Flight";
     }
-    /*var data = flightInfo;
-     var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
-
-                    var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
-                    var arrivePlace = _.filter(data.Places, { PlaceId: segment.DestinationId })[0];
-                    var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, { CarrierId: c })[0].Name);
-
-                    return {
-                        group: index + 1,
-                        departAirport: { code: departPlace.IataCode, name: departPlace.Name },
-                        arriveAirport: { code: arrivePlace.IataCode, name: arrivePlace.Name },
-                        departCity: { code: departPlace.CityId, name: departPlace.CityName },
-                        arriveCity: { code: arrivePlace.CityId, name: arrivePlace.CityName },
-                        departTime: segment.DepartureDate,
-                        carriers: carriers
-                    };
-                });*/
+    var asd=quote.OutboundLeg.Places.map(function(loc) {
+      return {
+        departureDate: loc.DepartureDate
+      };
+    });
 
     toReturn += " - ";
     toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
