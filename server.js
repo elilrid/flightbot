@@ -156,6 +156,11 @@ const actions = {
           console.log("getting departure");
             skyscanner.getLocation(departure).then(function (data) {
                 //departureCode = data;
+                if(data.length > 0) {
+                  departureCode = data[0].id;
+                } else {
+                  departureCode = "";
+                }
                 console.log(JSON.stringify(data));
                 //console.log("found departure" + data);
                 next(err);
@@ -165,6 +170,11 @@ const actions = {
           console.log("getting arrival");
             skyscanner.getLocation(arrival).then(function (data) {
                 //arrivalCode = data;
+                if(data.length > 0) {
+                  arrivalCode = data[0].id;
+                } else {
+                  arrivalCode = "";
+                }
                 console.log(JSON.stringify(data));
                 //console.log("found arrival" + data);
                 next(err);
