@@ -283,14 +283,15 @@ const actions = {
         })
         .then(function(next, err, detailInfo) {
           if (detailInfo == "") {
+            context.noFlight = true;
             delete context.foundFlights;
             //when everything is OK, clean up data
             delete context.arrival;
             delete context.departure;
             delete context.date;
 
-            context.noFlight = true;
           } else {
+            delete context.noFlight;
             context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
             //when everything is OK, clean up data
             delete context.arrival;
