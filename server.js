@@ -141,13 +141,13 @@ const actions = {
 
       skyscanner.getLocation(departure).then(function (data) {
           departureCode = data;
-          console.log("found departure" : data);
+          console.log("found departure" + data);
       });
 
 
       skyscanner.getLocation(arrival).then(function (data) {
           arrivalCode = data;
-          console.log("found arrival" : data);
+          console.log("found arrival" + data);
       });
 
       skyscanner.searchCache(departureCode,arrivalCode, date, date).then(function (data){
