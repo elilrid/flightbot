@@ -228,7 +228,7 @@ const actions = {
             //console.log(data);
             //priceAndDate is the splitted version of data.
             if (data.Quotes.length > 0) {
-              detailInformation = data.Quotes.map(function(quote) {
+              /*var detailInformation = data.Quotes.map(function(quote) {
 
                 var segments = [quote.OutboundLeg, quote.InboundLeg].map(function(segment, index) {
 
@@ -270,8 +270,8 @@ const actions = {
                   price: quote.MinPrice,
                   direct: quote.Direct,
                 }
-              });
-              console.log(detailInformation);
+              });*/
+              console.log(data);
 
               next(err, JSON.stringify(data));
             } else {
