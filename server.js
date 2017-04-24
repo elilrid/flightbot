@@ -254,7 +254,7 @@ function formatFlightMessage(flightInfo) {
     } else {
       toReturn += "Not a Direct Flight";
     }
-    var data = JSON.parse(flightInfo);
+    var data = flightInfo;
      var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
 
                     var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
