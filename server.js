@@ -14,7 +14,6 @@ var Sequence = require('sequence').Sequence;
 var promise = require('bluebird');
 var requestPromise = require('request-promise');
 var util = require('util');
-var _ = require('lodash');
 
 var skyscanner = require('./skyscanner');
 var _ = require('lodash');
