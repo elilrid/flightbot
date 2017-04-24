@@ -254,7 +254,7 @@ function formatFlightMessage(flightInfo) {
     } else {
       toReturn += "Not a Direct Flight";
     }
-    var asd=quote.OutboundLeg.Places.map(function(loc) {
+    var asd=quote.OutboundLeg.map(function(loc) {
       return {
         departureDate: loc.DepartureDate
       };
