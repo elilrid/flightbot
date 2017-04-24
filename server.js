@@ -183,7 +183,7 @@ const actions = {
       console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
 
       var err, detailInformation;
-
+      var done = false;
       sequence
         .then(function(next) {
           // This API key is shared in API documentation, you should register your own
@@ -284,7 +284,7 @@ const actions = {
         .then(function(next, err, detailInfo) {
           console.log("detailInfo : " + detailInfo);
           if (detailInfo == "") {
-            console.log("if detailInfo is not null");
+            console.log("if detailInfo is null");
             context.noFlight = true;
             delete context.foundFlights;
             //when everything is OK, clean up data
@@ -293,7 +293,7 @@ const actions = {
             delete context.date;
 
           } else {
-            console.log("else detailInfo is null");
+            console.log("else detailInfo is not null");
             delete context.noFlight;
             context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n" + detailInfo; // we should call a weather API here
             //when everything is OK, clean up data
@@ -301,9 +301,12 @@ const actions = {
             delete context.departure;
             delete context.date;
           }
-          //return context;
+          done = true;
           next();
         });
+      require('deasync').loopWhile(function() {
+        return !done;
+      });
       console.log("finished, returning context");
       return context;
     } else {
