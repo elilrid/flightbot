@@ -31,6 +31,7 @@ const WIT_TOKEN = config.get('witApiToken');
 
 console.log("validation token is " + VALIDATION_TOKEN);
 console.log("page access token is " + PAGE_ACCESS_TOKEN);
+console.log("skyscanner key is " + SKYSCANNER_KEY);
 
 
 // This will contain all user sessions.
@@ -151,6 +152,7 @@ const actions = {
           console.log("syscanner api key is set");
         })
         .then(function (next,err) {
+          console.log("getting departure");
             skyscanner.getLocation(departure).then(function (data) {
                 //departureCode = data;
                 for(var item in data) {
@@ -168,6 +170,7 @@ const actions = {
             });
         })
         .then(function (next, err) {
+          console.log("getting arrival");
             skyscanner.getLocation(arrival).then(function (data) {
                 //arrivalCode = data;
                 for(var item in data) {
