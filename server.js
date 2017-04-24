@@ -111,10 +111,9 @@ function formatDateForSkyScanner(date) {
 }
 
 function getLocationCode(data) {
+  var code = "";
   if (data.length > 0) {
     code = data[0].id;
-  } else {
-    code = "";
   }
   return code;
 }
