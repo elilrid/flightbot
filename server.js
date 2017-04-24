@@ -11,6 +11,11 @@ var Wit = require('node-wit').Wit;
 var log = require('node-wit').log;
 var Sequence = require('sequence').Sequence;
 
+var promise = require('bluebird');
+var requestPromise = require('request-promise');
+var util = require('util');
+var _ = require('lodash');
+
 var skyscanner = require('./skyscanner');
 var _ = require('lodash');
 
@@ -256,7 +261,7 @@ function formatFlightMessage(flightInfo) {
     }
     var asd=quote.OutboundLeg.map(function(loc) {
       return {
-        departureDate: loc.DepartureDate
+        departureDate: loc.DepartureDate,
       };
     });
 
