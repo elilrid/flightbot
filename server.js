@@ -208,20 +208,22 @@ const actions = {
                 });
                 console.log(detailInformation);
 
-                next();
+                next(err);
             });
 
+        })
+        .then(function (next, err) {
+          context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
+          //when everything is OK, clean up data
+          delete context.arrival;
+          delete context.departure;
+          delete context.date;
+          next();
         });
-
-      context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
-
-
-      //when everything is OK, clean up data
-      delete context.arrival;
-      delete context.departure;
-      delete context.date;
+    }  else {
+      return context;
     }
-    return context;
+
   },
   // You should implement your custom actions here
   // See https://wit.ai/docs/quickstart
