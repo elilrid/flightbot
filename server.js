@@ -9,10 +9,13 @@ var request = require('request');
 var crypto = require('crypto');
 var Wit = require('node-wit').Wit;
 var log = require('node-wit').log;
+var Sequence = require('sequence').Sequence;
 
 var skyscanner = require('./skyscanner');
 var _ = require('lodash');
 
+
+var sequence = Sequence.create();
 var app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
@@ -139,49 +142,60 @@ const actions = {
 
       console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
 
-      skyscanner.getLocation(departure).then(function (data) {
-          departureCode = data;
-          console.log("found departure" + data);
-      });
+      var err, detailInformation;
 
+      sequence
+        .then(function (next) {
+            skyscanner.getLocation(departure).then(function (data) {
+                departureCode = data;
+                console.log("found departure" + data);
+                next(err);
+            });
+        })
+        .then(function (next, err) {
+            skyscanner.getLocation(arrival).then(function (data) {
+                arrivalCode = data;
+                console.log("found arrival" + data);
+                next(err);
+            });
+        })
+        .then(function (next, err, a, b) {
+            skyscanner.searchCache(departureCode,arrivalCode, date, date).then(function (data){
+                //data is the response of skyscanner
+                //console.log is a function that prints the terminal.
+                //console.log(data);
+                //priceAndDate is the splitted version of data.
+                detailInformation = data.Quotes.map(function (quote) {
 
-      skyscanner.getLocation(arrival).then(function (data) {
-          arrivalCode = data;
-          console.log("found arrival" + data);
-      });
+                    var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
 
-      skyscanner.searchCache(departureCode,arrivalCode, date, date).then(function (data){
-          //data is the response of skyscanner
-          //console.log is a function that prints the terminal.
-          //console.log(data);
-          //priceAndDate is the splitted version of data.
-          var detailInformation = data.Quotes.map(function (quote) {
+                        var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
+                        var arrivePlace = _.filter(data.Places, { PlaceId: segment.DestinationId })[0];
+                        var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, { CarrierId: c })[0].Name);
 
-              var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
+                        return {
+                            group: index + 1,
+                            departAirport: { code: departPlace.IataCode, name: departPlace.Name },
+                            arriveAirport: { code: arrivePlace.IataCode, name: arrivePlace.Name },
+                            departCity: { code: departPlace.CityId, name: departPlace.CityName },
+                            arriveCity: { code: arrivePlace.CityId, name: arrivePlace.CityName },
+                            departTime: segment.DepartureDate,
+                            carriers: carriers
+                        };
+                    });
+                    console.log(segments);
+                    return {
+                        //segments: segments,
+                        price: quote.MinPrice,
+                        direct: quote.Direct,
+                    }
+                });
+                console.log(detailInformation);
 
-                  var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
-                  var arrivePlace = _.filter(data.Places, { PlaceId: segment.DestinationId })[0];
-                  var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, { CarrierId: c })[0].Name);
+                next();
+            });
 
-                  return {
-                      group: index + 1,
-                      departAirport: { code: departPlace.IataCode, name: departPlace.Name },
-                      arriveAirport: { code: arrivePlace.IataCode, name: arrivePlace.Name },
-                      departCity: { code: departPlace.CityId, name: departPlace.CityName },
-                      arriveCity: { code: arrivePlace.CityId, name: arrivePlace.CityName },
-                      departTime: segment.DepartureDate,
-                      carriers: carriers
-                  };
-              });
-              console.log(segments);
-              return {
-                  //segments: segments,
-                  price: quote.MinPrice,
-                  direct: quote.Direct,
-              }
-          });
-          console.log(detailInformation);
-      });
+        });
 
       context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
 
