@@ -304,9 +304,9 @@ const actions = {
           done = true;
           next();
         });
-      require('deasync').loopWhile(function() {
-        return !done;
-      });
+      while (!done) {
+
+      };
       console.log("finished, returning context");
       return context;
     } else {
