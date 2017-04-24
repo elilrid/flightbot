@@ -75,7 +75,15 @@ function formatDate(date) {
   hours = hours ? hours : 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? '0'+minutes : minutes;
   //var strTime = hours + ':' + minutes + ' ' + ampm;
-  return (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+  if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) < 10) {
+    return "0" + (date.getDate() + 1) + "/0" + (date.getMonth() + 1) + "/" + date.getFullYear();
+  } else if((date.getMonth() + 1) >= 10 &&  (date.getDate() + 1) < 10) {
+    return (date.getDate() + 1) + "/0" + (date.getMonth() + 1) + "/" + date.getFullYear();
+  } else if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) >= 10) {
+    return "0" + (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+  } else {
+    return (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+  }
 }
 
 function formatDateForSkyScanner(date) {
@@ -86,7 +94,15 @@ function formatDateForSkyScanner(date) {
   hours = hours ? hours : 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? '0'+minutes : minutes;
   //var strTime = hours + ':' + minutes + ' ' + ampm;
-  return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1) ;
+  if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) < 10) {
+    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1) ;
+  } else if((date.getMonth() + 1) >= 10 &&  (date.getDate() + 1) < 10) {
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1) ;
+  } else if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) >= 10) {
+    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-" + (date.getDate() + 1) ;
+  } else {
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1) ;
+  }
 }
 
 // Our bot actions
