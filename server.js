@@ -256,7 +256,8 @@ function formatFlightMessage(flightInfo) {
     }
 
     toReturn += " - ";
-    toReturn += "Time : " + formatDate(new Date(quote.OutboundLeg));
+    var outboundLeg=quote.OutboundLeg;
+    toReturn += "Time : " + formatDate(new Date(outboundLeg.DepartureDate));
   }
   return toReturn;
 }
