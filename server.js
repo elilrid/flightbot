@@ -256,7 +256,7 @@ function formatFlightMessage(flightInfo) {
     }
 
     toReturn += " - ";
-    var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
+    /*var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
 
                     var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
                     var arrivePlace = _.filter(data.Places, { PlaceId: segment.DestinationId })[0];
@@ -272,7 +272,7 @@ function formatFlightMessage(flightInfo) {
                         carriers: carriers
                     };
                 });
-    console.log(segments);
+    console.log(segments);*/
     toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
   }
   return toReturn;
