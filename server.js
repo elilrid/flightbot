@@ -18,7 +18,9 @@ var _ = require('lodash');
 var sequence = Sequence.create();
 var app = express();
 app.set('view engine', 'ejs');
-app.use(bodyParser.json({ verify: verifyRequestSignature }));
+app.use(bodyParser.json({
+  verify: verifyRequestSignature
+}));
 app.use(express.static('public'));
 
 //tokens for facebook
@@ -51,7 +53,10 @@ const findOrCreateSession = (fbid) => {
   if (!sessionId) {
     // No session found for user fbid, let's create a new one
     sessionId = new Date().toISOString();
-    sessions[sessionId] = {fbid: fbid, context: {}};
+    sessions[sessionId] = {
+      fbid: fbid,
+      context: {}
+    };
   }
   return sessionId;
 };
@@ -73,13 +78,13 @@ function formatDate(date) {
   var ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? '0'+minutes : minutes;
+  minutes = minutes < 10 ? '0' + minutes : minutes;
   //var strTime = hours + ':' + minutes + ' ' + ampm;
-  if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) < 10) {
+  if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) < 10) {
     return "0" + (date.getDate() + 1) + "/0" + (date.getMonth() + 1) + "/" + date.getFullYear();
-  } else if((date.getMonth() + 1) >= 10 &&  (date.getDate() + 1) < 10) {
+  } else if ((date.getMonth() + 1) >= 10 && (date.getDate() + 1) < 10) {
     return (date.getDate() + 1) + "/0" + (date.getMonth() + 1) + "/" + date.getFullYear();
-  } else if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) >= 10) {
+  } else if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) >= 10) {
     return "0" + (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
   } else {
     return (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
@@ -92,22 +97,26 @@ function formatDateForSkyScanner(date) {
   var ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? '0'+minutes : minutes;
+  minutes = minutes < 10 ? '0' + minutes : minutes;
   //var strTime = hours + ':' + minutes + ' ' + ampm;
-  if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) < 10) {
-    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1) ;
-  } else if((date.getMonth() + 1) >= 10 &&  (date.getDate() + 1) < 10) {
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1) ;
-  } else if((date.getMonth() + 1) < 10 &&  (date.getDate() + 1) >= 10) {
-    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-" + (date.getDate() + 1) ;
+  if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) < 10) {
+    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1);
+  } else if ((date.getMonth() + 1) >= 10 && (date.getDate() + 1) < 10) {
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1);
+  } else if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) >= 10) {
+    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-" + (date.getDate() + 1);
   } else {
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1) ;
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1);
   }
 }
 
 // Our bot actions
 const actions = {
-  send({sessionId}, {text}) {
+  send({
+    sessionId
+  }, {
+    text
+  }) {
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
     const recipientId = sessions[sessionId].fbid;
@@ -122,7 +131,10 @@ const actions = {
       return Promise.resolve()
     }
   },
-  findFlights({context, entities}) {
+  findFlights({
+    context,
+    entities
+  }) {
 
     var sessionId = context.sessionId;
     var oldContext = sessions[sessionId].context;
@@ -131,35 +143,35 @@ const actions = {
     var oldArrival = oldContext.arrival;
     var oldDate = oldContext.date;
 
-    if(oldDeparture == null && entityValue(entities,'departure',1) == null) {
+    if (oldDeparture == null && entityValue(entities, 'departure', 1) == null) {
       context.missingDeparture = true;
-    } else if(oldDeparture == null) {
-      context.departure = entityValue(entities,'departure',1);
+    } else if (oldDeparture == null) {
+      context.departure = entityValue(entities, 'departure', 1);
       delete context.missingDeparture;
     } else {
       context.departure = oldDeparture;
       delete context.missingDeparture;
     }
-    if(oldArrival == null && entityValue(entities,'arrival',1) == null) {
+    if (oldArrival == null && entityValue(entities, 'arrival', 1) == null) {
       context.missingArrival = true;
-    } else if(oldArrival == null) {
-      context.arrival = entityValue(entities,'arrival',1);
+    } else if (oldArrival == null) {
+      context.arrival = entityValue(entities, 'arrival', 1);
       delete context.missingArrival;
     } else {
       context.arrival = oldArrival;
       delete context.missingArrival;
     }
-    if(oldDate == null && entityValue(entities,'datetime',1) == null) {
+    if (oldDate == null && entityValue(entities, 'datetime', 1) == null) {
       context.missingDate = true;
-    } else if(oldDate == null) {
-      context.date = entityValue(entities,'datetime',1);
+    } else if (oldDate == null) {
+      context.date = entityValue(entities, 'datetime', 1);
       delete context.missingDate;
     } else {
       context.date = oldDate;
       delete context.missingDate;
     }
 
-    if(context.missingDate == null  && context.missingArrival == null && context.missingDate == null) {
+    if (context.missingDate == null && context.missingArrival == null && context.missingDate == null) {
       //If everything is OK, find flights
 
       var departure = context.departure;
@@ -173,88 +185,121 @@ const actions = {
       var err, detailInformation;
 
       sequence
-        .then(function (next) {
+        .then(function(next) {
           // This API key is shared in API documentation, you should register your own
           skyscanner.setApiKey(SKYSCANNER_KEY);
           console.log("syscanner api key is set");
           next(err);
         })
-        .then(function (next,err) {
+        .then(function(next, err) {
           console.log("getting departure");
-            skyscanner.getLocation(departure).then(function (data) {
-                //departureCode = data;
-                if(data.length > 0) {
-                  departureCode = data[0].id;
-                } else {
-                  departureCode = "";
-                }
-                console.log(JSON.stringify(data));
-                //console.log("found departure" + data);
-                next(err);
-            });
+          skyscanner.getLocation(departure).then(function(data) {
+            //departureCode = data;
+            if (data.length > 0) {
+              departureCode = data[0].id;
+            } else {
+              departureCode = "";
+            }
+            console.log(JSON.stringify(data));
+            //console.log("found departure" + data);
+            next(err);
+          });
         })
-        .then(function (next, err) {
+        .then(function(next, err) {
           console.log("getting arrival");
-            skyscanner.getLocation(arrival).then(function (data) {
-                //arrivalCode = data;
-                if(data.length > 0) {
-                  arrivalCode = data[0].id;
-                } else {
-                  arrivalCode = "";
-                }
-                console.log(JSON.stringify(data));
-                //console.log("found arrival" + data);
-                next(err);
-            });
+          skyscanner.getLocation(arrival).then(function(data) {
+            //arrivalCode = data;
+            if (data.length > 0) {
+              arrivalCode = data[0].id;
+            } else {
+              arrivalCode = "";
+            }
+            console.log(JSON.stringify(data));
+            //console.log("found arrival" + data);
+            next(err);
+          });
         })
-        .then(function (next, err) {
-            console.log("now got departure as " + departureCode + " and arrival as " + arrivalCode + ". Searching for flights!");
-            skyscanner.searchCache(departureCode,arrivalCode, formatDateForSkyScanner(new Date(date)), formatDateForSkyScanner(new Date(date))).then(function (data){
-                console.log(JSON.stringify(data));
-                //data is the response of skyscanner
-                //console.log is a function that prints the terminal.
-                //console.log(data);
-                //priceAndDate is the splitted version of data.
-                detailInformation = data.Quotes.map(function (quote) {
+        .then(function(next, err) {
+          console.log("now got departure as " + departureCode + " and arrival as " + arrivalCode + ". Searching for flights!");
+          skyscanner.searchCache(departureCode, arrivalCode, formatDateForSkyScanner(new Date(date)), formatDateForSkyScanner(new Date(date))).then(function(data) {
+            //console.log(JSON.stringify(data));
+            //data is the response of skyscanner
+            //console.log is a function that prints the terminal.
+            //console.log(data);
+            //priceAndDate is the splitted version of data.
+            if (data.Quotes.length > 0) {
+              detailInformation = data.Quotes.map(function(quote) {
 
-                    var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
+                var segments = [quote.OutboundLeg, quote.InboundLeg].map(function(segment, index) {
 
-                        var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
-                        var arrivePlace = _.filter(data.Places, { PlaceId: segment.DestinationId })[0];
-                        var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, { CarrierId: c })[0].Name);
+                  var departPlace = _.filter(data.Places, {
+                    PlaceId: segment.OriginId
+                  })[0];
+                  var arrivePlace = _.filter(data.Places, {
+                    PlaceId: segment.DestinationId
+                  })[0];
+                  var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, {
+                    CarrierId: c
+                  })[0].Name);
 
-                        return {
-                            group: index + 1,
-                            departAirport: { code: departPlace.IataCode, name: departPlace.Name },
-                            arriveAirport: { code: arrivePlace.IataCode, name: arrivePlace.Name },
-                            departCity: { code: departPlace.CityId, name: departPlace.CityName },
-                            arriveCity: { code: arrivePlace.CityId, name: arrivePlace.CityName },
-                            departTime: segment.DepartureDate,
-                            carriers: carriers
-                        };
-                    });
-                    console.log(segments);
-                    return {
-                        //segments: segments,
-                        price: quote.MinPrice,
-                        direct: quote.Direct,
-                    }
+                  return {
+                    group: index + 1,
+                    departAirport: {
+                      code: departPlace.IataCode,
+                      name: departPlace.Name
+                    },
+                    arriveAirport: {
+                      code: arrivePlace.IataCode,
+                      name: arrivePlace.Name
+                    },
+                    departCity: {
+                      code: departPlace.CityId,
+                      name: departPlace.CityName
+                    },
+                    arriveCity: {
+                      code: arrivePlace.CityId,
+                      name: arrivePlace.CityName
+                    },
+                    departTime: segment.DepartureDate,
+                    carriers: carriers
+                  };
                 });
-                console.log(detailInformation);
+                console.log(segments);
+                return {
+                  //segments: segments,
+                  price: quote.MinPrice,
+                  direct: quote.Direct,
+                }
+              });
+              console.log(detailInformation);
 
-                next(err);
-            });
+              next(err, detailInformation);
+            } else {
+              next(err, "");
+            }
+
+          });
 
         })
-        .then(function (next, err) {
-          context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
-          //when everything is OK, clean up data
-          delete context.arrival;
-          delete context.departure;
-          delete context.date;
+        .then(function(next, err, detailInfo) {
+          if (detailInfo == "") {
+            delete context.foundFlights;
+            //when everything is OK, clean up data
+            delete context.arrival;
+            delete context.departure;
+            delete context.date;
+
+            context.noFlight = true;
+          } else {
+            context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
+            //when everything is OK, clean up data
+            delete context.arrival;
+            delete context.departure;
+            delete context.date;
+          }
           next();
         });
-    }  else {
+    } else {
       return context;
     }
 
@@ -274,7 +319,7 @@ const wit = new Wit({
 app.get('/flights', function(req, res) {
 
   if (req.query['hub.mode'] === 'subscribe' &&
-      req.query['hub.verify_token'] === VALIDATION_TOKEN) {
+    req.query['hub.verify_token'] === VALIDATION_TOKEN) {
     console.log("Validating webhook");
     res.status(200).send(req.query['hub.challenge']);
   } else {
@@ -292,7 +337,7 @@ app.get('/flights', function(req, res) {
  * https://developers.facebook.com/docs/messenger-platform/product-overview/setup#subscribe_app
  *
  */
-app.post('/flights', function (req, res) {
+app.post('/flights', function(req, res) {
   var data = req.body;
   console.log("a request has come!");
   console.log("request " + req);
@@ -384,37 +429,36 @@ function receivedMessage(event) {
   var messageAttachments = message.attachments;
 
   if (messageText) {
-        //sendTextMessage(senderID,"Searching for available flights according to given parameters!");
+    //sendTextMessage(senderID,"Searching for available flights according to given parameters!");
 
-        sessions[sessionId].context.sessionId = sessionId;
+    sessions[sessionId].context.sessionId = sessionId;
 
-        // Let's forward the message to the Wit.ai Bot Engine
-        // This will run all actions until our bot has nothing left to do
-        wit.runActions(
-          sessionId, // the user's current session
-          messageText, // the user's message
-          sessions[sessionId].context // the user's current session state
-        ).then((context) => {
-          // Our bot did everything it has to do.
-          // Now it's waiting for further messages to proceed.
-          console.log('Waiting for next user messages');
+    // Let's forward the message to the Wit.ai Bot Engine
+    // This will run all actions until our bot has nothing left to do
+    wit.runActions(
+        sessionId, // the user's current session
+        messageText, // the user's message
+        sessions[sessionId].context // the user's current session state
+      ).then((context) => {
+        // Our bot did everything it has to do.
+        // Now it's waiting for further messages to proceed.
+        console.log('Waiting for next user messages');
 
-          // Based on the session state, you might want to reset the session.
-          // This depends heavily on the business logic of your bot.
-          // Example:
-          // if (context['done']) {
-          //   delete sessions[sessionId];
-          // }
+        // Based on the session state, you might want to reset the session.
+        // This depends heavily on the business logic of your bot.
+        // Example:
+        // if (context['done']) {
+        //   delete sessions[sessionId];
+        // }
 
-          // Updating the user's current session state
-          sessions[sessionId].context = context;
-        })
-        .catch((err) => {
-          console.error('Oops! Got an error from Wit: ', err.stack || err);
-        })
-        return;
-  }
-  else if (messageAttachments) {
+        // Updating the user's current session state
+        sessions[sessionId].context = context;
+      })
+      .catch((err) => {
+        console.error('Oops! Got an error from Wit: ', err.stack || err);
+      })
+    return;
+  } else if (messageAttachments) {
     sendTextMessage(senderID, "Sorry I can only process text messages for now.");
   }
 }
@@ -445,11 +489,13 @@ function sendTextMessage(recipientId, messageText) {
 function callSendAPI(messageData) {
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: { access_token: PAGE_ACCESS_TOKEN },
+    qs: {
+      access_token: PAGE_ACCESS_TOKEN
+    },
     method: 'POST',
     json: messageData
 
-  }, function (error, response, body) {
+  }, function(error, response, body) {
     if (!error && response.statusCode == 200) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
@@ -458,8 +504,8 @@ function callSendAPI(messageData) {
         console.log("Successfully sent message with id %s to recipient %s",
           messageId, recipientId);
       } else {
-      console.log("Successfully called Send API for recipient %s",
-        recipientId);
+        console.log("Successfully called Send API for recipient %s",
+          recipientId);
       }
     } else {
       console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
@@ -488,8 +534,8 @@ function verifyRequestSignature(req, res, buf) {
     var signatureHash = elements[1];
 
     var expectedHash = crypto.createHmac('sha1', APP_SECRET)
-                        .update(buf)
-                        .digest('hex');
+      .update(buf)
+      .digest('hex');
 
     if (signatureHash != expectedHash) {
       throw new Error("Couldn't validate the request signature.");
@@ -509,12 +555,14 @@ function verifyRequestSignature(req, res, buf) {
 //    res.status(200).json({"success": true});
 // })
 
-app.get('/policy', function (req, res) {
-   res.render('policy');
-   res.status(200).json({"success": true});
+app.get('/policy', function(req, res) {
+  res.render('policy');
+  res.status(200).json({
+    "success": true
+  });
 })
 
-var server = app.listen(process.env.PORT || 8080, function () {
+var server = app.listen(process.env.PORT || 8080, function() {
 
   var host = server.address().address
   var port = server.address().port
