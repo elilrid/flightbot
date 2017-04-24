@@ -242,6 +242,7 @@ function getLocationCode(data) {
 
 function formatFlightMessage(flightInfo) {
   var i, toReturn = "";
+  console.log("asdasd");
   console.log(flightInfo);
   for (i = 0; i < flightInfo.Quotes.length; i++) {
     var quote = flightInfo.Quotes[i];
