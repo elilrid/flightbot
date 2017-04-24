@@ -29,6 +29,9 @@ const APP_SECRET = config.get('appSecret');
 const SKYSCANNER_TOKEN = config.get('skyscannerApiKey');
 const WIT_TOKEN = config.get('witApiToken');
 
+// This API key is shared in API documentation, you should register your own
+skyscanner.setApiKey('fl989112564576873089361895446787');
+
 console.log("validation token is " + VALIDATION_TOKEN);
 console.log("page access token is " + PAGE_ACCESS_TOKEN);
 
