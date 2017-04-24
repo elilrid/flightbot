@@ -150,6 +150,7 @@ const actions = {
           // This API key is shared in API documentation, you should register your own
           skyscanner.setApiKey(SKYSCANNER_KEY);
           console.log("syscanner api key is set");
+          next(err);
         })
         .then(function (next,err) {
           console.log("getting departure");
