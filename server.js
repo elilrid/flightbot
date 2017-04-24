@@ -254,7 +254,9 @@ function formatFlightMessage(flightInfo) {
     } else {
       toReturn += "Not a Direct Flight";
     }
-
+    quote.OutboundLeg.forEach(x => {
+       console.log(x.DepartureDate, x.DepartureDate);
+    });
     toReturn += " - ";
     toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
   }
