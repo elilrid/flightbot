@@ -518,6 +518,9 @@ function receivedMessage(event) {
  *
  */
 function sendTextMessage(recipientId, messageText) {
+  if (messageText.length > 640) {
+    messageText = messageText.substring(0, 639);
+  }
   var messageData = {
     recipient: {
       id: recipientId
