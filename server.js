@@ -152,10 +152,14 @@ const actions = {
             skyscanner.getLocation(departure).then(function (data) {
                 //departureCode = data;
                 for(var item in data) {
-                  var id = data.id;
+                  console.log("Found departure!");
+                  for(var key in item) {
+                      console.log("key : " + key + " value : " + item[key]);
+                  }
+                  /*var id = data.id;
                   var name = data.name;
                   departureCode = name;
-                  console.log("Found departure : id : " + id + " name : " + name);
+                  console.log("Found departure : id : " + id + " name : " + name);*/
                 }
                 //console.log("found departure" + data);
                 next(err);
@@ -165,10 +169,14 @@ const actions = {
             skyscanner.getLocation(arrival).then(function (data) {
                 //arrivalCode = data;
                 for(var item in data) {
-                  var id = data.id;
+                  console.log("Found arrival!");
+                  for(var key in item) {
+                      console.log("key : " + key + " value : " + item[key]);
+                  }
+                  /*var id = data.id;
                   var name = data.name;
                   arrivalCode = name;
-                  console.log("Found arrival : id : " + id + " name : " + name);
+                  console.log("Found arrival : id : " + id + " name : " + name);*/
                 }
                 //console.log("found arrival" + data);
                 next(err);
