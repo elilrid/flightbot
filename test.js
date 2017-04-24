@@ -11,11 +11,12 @@ skyscanner.getLocation('Istanbul').then(function (data) {
     console.log(data);
 });
 
-skyscanner.searchCache('IST-sky','KFS-sky', '2017-05-29', '2017-06-21').then(function (data){
+skyscanner.searchCache('ADA-sky','BERL-sky', '2017-04-24', '2017-04-24').then(function (data){
     //data is the response of skyscanner
     //console.log is a function that prints the terminal.
     //console.log(data);
     //priceAndDate is the splitted version of data.
+    console.log(JSON.stringify(data));
     var detailInformation = data.Quotes.map(function (quote) {
 
         var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {

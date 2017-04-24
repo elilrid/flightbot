@@ -78,6 +78,17 @@ function formatDate(date) {
   return (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
 }
 
+function formatDateForSkyScanner(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  //var strTime = hours + ':' + minutes + ' ' + ampm;
+  return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1) ;
+}
+
 // Our bot actions
 const actions = {
   send({sessionId}, {text}) {
@@ -182,7 +193,7 @@ const actions = {
         })
         .then(function (next, err) {
             console.log("now got departure as " + departureCode + " and arrival as " + arrivalCode + ". Searching for flights!");
-            skyscanner.searchCache(departureCode,arrivalCode, date, date).then(function (data){
+            skyscanner.searchCache(departureCode,arrivalCode, formatDateForSkyScanner(new Date(date)), formatDateForSkyScanner(new Date(date))).then(function (data){
                 console.log(JSON.stringify(data));
                 //data is the response of skyscanner
                 //console.log is a function that prints the terminal.
