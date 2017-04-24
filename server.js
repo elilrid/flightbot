@@ -182,131 +182,11 @@ const actions = {
 
       console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
 
-      var err, detailInformation;
+      var err;
       var done = false;
-      sequence
-        .then(function(next) {
-          // This API key is shared in API documentation, you should register your own
-          skyscanner.setApiKey(SKYSCANNER_KEY);
-          console.log("syscanner api key is set");
-          next(err);
-        })
-        .then(function(next, err) {
-          console.log("getting departure");
-          skyscanner.getLocation(departure).then(function(data) {
-            //departureCode = data;
-            if (data.length > 0) {
-              departureCode = data[0].id;
-            } else {
-              departureCode = "";
-            }
-            console.log(JSON.stringify(data));
-            //console.log("found departure" + data);
-            next(err);
-          });
-        })
-        .then(function(next, err) {
-          console.log("getting arrival");
-          skyscanner.getLocation(arrival).then(function(data) {
-            //arrivalCode = data;
-            if (data.length > 0) {
-              arrivalCode = data[0].id;
-            } else {
-              arrivalCode = "";
-            }
-            console.log(JSON.stringify(data));
-            //console.log("found arrival" + data);
-            next(err);
-          });
-        })
-        .then(function(next, err) {
-          console.log("now got departure as " + departureCode + " and arrival as " + arrivalCode + ". Searching for flights!");
-          skyscanner.searchCache(departureCode, arrivalCode, formatDateForSkyScanner(new Date(date)), formatDateForSkyScanner(new Date(date))).then(function(data) {
-            //console.log(JSON.stringify(data));
-            //data is the response of skyscanner
-            //console.log is a function that prints the terminal.
-            //console.log(data);
-            //priceAndDate is the splitted version of data.
-            if (data.Quotes.length > 0) {
-              /*var detailInformation = data.Quotes.map(function(quote) {
 
-                var segments = [quote.OutboundLeg, quote.InboundLeg].map(function(segment, index) {
+      var detailInformation = await findFlights(departure, arrival, formatDateForSkyScanner(new Date(date)));
 
-                  var departPlace = _.filter(data.Places, {
-                    PlaceId: segment.OriginId
-                  })[0];
-                  var arrivePlace = _.filter(data.Places, {
-                    PlaceId: segment.DestinationId
-                  })[0];
-                  var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, {
-                    CarrierId: c
-                  })[0].Name);
-
-                  return {
-                    group: index + 1,
-                    departAirport: {
-                      code: departPlace.IataCode,
-                      name: departPlace.Name
-                    },
-                    arriveAirport: {
-                      code: arrivePlace.IataCode,
-                      name: arrivePlace.Name
-                    },
-                    departCity: {
-                      code: departPlace.CityId,
-                      name: departPlace.CityName
-                    },
-                    arriveCity: {
-                      code: arrivePlace.CityId,
-                      name: arrivePlace.CityName
-                    },
-                    departTime: segment.DepartureDate,
-                    carriers: carriers
-                  };
-                });
-                console.log(segments);
-                return {
-                  //segments: segments,
-                  price: quote.MinPrice,
-                  direct: quote.Direct,
-                }
-              });*/
-              console.log(data);
-
-              next(err, JSON.stringify(data));
-            } else {
-              next(err, "");
-            }
-
-          });
-
-        })
-        .then(function(next, err, detailInfo) {
-          console.log("detailInfo : " + detailInfo);
-          if (detailInfo == "") {
-            console.log("if detailInfo is null");
-            context.noFlight = true;
-            delete context.foundFlights;
-            //when everything is OK, clean up data
-            delete context.arrival;
-            delete context.departure;
-            delete context.date;
-
-          } else {
-            console.log("else detailInfo is not null");
-            delete context.noFlight;
-            context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n" + detailInfo; // we should call a weather API here
-            //when everything is OK, clean up data
-            delete context.arrival;
-            delete context.departure;
-            delete context.date;
-          }
-          done = true;
-          next();
-        });
-      while (!done) {
-
-      };
       console.log("finished, returning context");
       return context;
     } else {
@@ -317,6 +197,133 @@ const actions = {
   // You should implement your custom actions here
   // See https://wit.ai/docs/quickstart
 };
+
+async function findFlights(departure, arrival, date) {
+  let departureCode, arrivalCode;
+
+  sequence
+    .then(function(next) {
+      // This API key is shared in API documentation, you should register your own
+      skyscanner.setApiKey(SKYSCANNER_KEY);
+      console.log("syscanner api key is set");
+      next(err);
+    })
+    .then(function(next, err) {
+      console.log("getting departure");
+      skyscanner.getLocation(departure).then(function(data) {
+        //departureCode = data;
+        if (data.length > 0) {
+          departureCode = data[0].id;
+        } else {
+          departureCode = "";
+        }
+        console.log(JSON.stringify(data));
+        //console.log("found departure" + data);
+        next(err);
+      });
+    })
+    .then(function(next, err) {
+      console.log("getting arrival");
+      skyscanner.getLocation(arrival).then(function(data) {
+        //arrivalCode = data;
+        if (data.length > 0) {
+          arrivalCode = data[0].id;
+        } else {
+          arrivalCode = "";
+        }
+        console.log(JSON.stringify(data));
+        //console.log("found arrival" + data);
+        next(err);
+      });
+    })
+    .then(function(next, err) {
+      console.log("now got departure as " + departureCode + " and arrival as " + arrivalCode + ". Searching for flights!");
+      skyscanner.searchCache(departureCode, arrivalCode, formatDateForSkyScanner(new Date(date)), formatDateForSkyScanner(new Date(date))).then(function(data) {
+        //console.log(JSON.stringify(data));
+        //data is the response of skyscanner
+        //console.log is a function that prints the terminal.
+        //console.log(data);
+        //priceAndDate is the splitted version of data.
+        if (data.Quotes.length > 0) {
+          /*var detailInformation = data.Quotes.map(function(quote) {
+
+            var segments = [quote.OutboundLeg, quote.InboundLeg].map(function(segment, index) {
+
+              var departPlace = _.filter(data.Places, {
+                PlaceId: segment.OriginId
+              })[0];
+              var arrivePlace = _.filter(data.Places, {
+                PlaceId: segment.DestinationId
+              })[0];
+              var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, {
+                CarrierId: c
+              })[0].Name);
+
+              return {
+                group: index + 1,
+                departAirport: {
+                  code: departPlace.IataCode,
+                  name: departPlace.Name
+                },
+                arriveAirport: {
+                  code: arrivePlace.IataCode,
+                  name: arrivePlace.Name
+                },
+                departCity: {
+                  code: departPlace.CityId,
+                  name: departPlace.CityName
+                },
+                arriveCity: {
+                  code: arrivePlace.CityId,
+                  name: arrivePlace.CityName
+                },
+                departTime: segment.DepartureDate,
+                carriers: carriers
+              };
+            });
+            console.log(segments);
+            return {
+              //segments: segments,
+              price: quote.MinPrice,
+              direct: quote.Direct,
+            }
+          });*/
+          console.log(data);
+
+          next(err, JSON.stringify(data));
+        } else {
+          next(err, "");
+        }
+
+      });
+
+    })
+    .then(function(next, err, detailInfo) {
+      console.log("detailInfo : " + detailInfo);
+      if (detailInfo == "") {
+        console.log("if detailInfo is null");
+        context.noFlight = true;
+        delete context.foundFlights;
+        //when everything is OK, clean up data
+        delete context.arrival;
+        delete context.departure;
+        delete context.date;
+
+      } else {
+        console.log("else detailInfo is not null");
+        delete context.noFlight;
+        context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n" + detailInfo; // we should call a weather API here
+        //when everything is OK, clean up data
+        delete context.arrival;
+        delete context.departure;
+        delete context.date;
+      }
+      //detailInformation = detailInfo;
+
+      return detailInfo;
+      //next();
+    });
+}
 
 // Setting up our bot
 const wit = new Wit({
