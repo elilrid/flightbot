@@ -210,7 +210,7 @@ const actions = {
       } else {
         console.log("else detailInfo is not null");
         delete context.noFlight;
-        context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n----------" + formatFlightMessage(foundFlights); // we should call a weather API here
+        context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n----------" + formatFlightMessage(flightInfo); // we should call a weather API here
         //when everything is OK, clean up data
         delete context.arrival;
         delete context.departure;
