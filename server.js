@@ -242,6 +242,7 @@ function getLocationCode(data) {
 
 function formatFlightMessage(flightInfo) {
   var i, toReturn = "";
+  console.log(flightInfo);
   for (i = 0; i < flightInfo.Quotes.length; i++) {
     var quote = flightInfo.Quotes[i];
     console.log(JSON.stringify(quote));
@@ -254,7 +255,7 @@ function formatFlightMessage(flightInfo) {
     } else {
       toReturn += "Not a Direct Flight";
     }
-    var data = flightInfo;
+    /*var data = flightInfo;
      var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
 
                     var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
@@ -270,7 +271,7 @@ function formatFlightMessage(flightInfo) {
                         departTime: segment.DepartureDate,
                         carriers: carriers
                     };
-                });
+                });*/
 
     toReturn += " - ";
     toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
