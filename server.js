@@ -255,14 +255,8 @@ function formatFlightMessage(flightInfo) {
       toReturn += "Not a Direct Flight";
     }
     
-    toReturn += " - ";
-    if (!(quote.OutboundLeg.DepartureDate == undefined)){      
-      toReturn += "Time : " + formatDate(new Date(quote.OutboundLeg.DepartureDate));
-    }else if(!(quote.InboundLeg.DepartureDate==undefined)){      
-      toReturn += "Time : " + formatDate(new Date(quote.InboundLeg.DepartureDate));
-    }else {      
-      toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
-    }
+    toReturn += " - ";     
+    toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
   }
   return toReturn;
 }
