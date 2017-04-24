@@ -13,6 +13,6 @@
     "node-wit":"^4.2.0",
     "sequence":"^3.0.0",
     "JSON":"^1.0.0",
-    "nodent":"^3.0.17"
+    "sync-request":"^4.0.2"
   }
 }
