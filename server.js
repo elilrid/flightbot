@@ -159,7 +159,8 @@ const actions = {
                 next(err);
             });
         })
-        .then(function (next, err, a, b) {
+        .then(function (next, err) {
+            console.log("now got departure as " + departureCode + " and arrival as " + arrivalCode + ". Searching for flights!");
             skyscanner.searchCache(departureCode,arrivalCode, date, date).then(function (data){
                 //data is the response of skyscanner
                 //console.log is a function that prints the terminal.
