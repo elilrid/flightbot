@@ -256,23 +256,6 @@ function formatFlightMessage(flightInfo) {
     }
 
     toReturn += " - ";
-    /*var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
-
-                    var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
-                    var arrivePlace = _.filter(data.Places, { PlaceId: segment.DestinationId })[0];
-                    var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, { CarrierId: c })[0].Name);
-
-                    return {
-                        group: index + 1,
-                        departAirport: { code: departPlace.IataCode, name: departPlace.Name },
-                        arriveAirport: { code: arrivePlace.IataCode, name: arrivePlace.Name },
-                        departCity: { code: departPlace.CityId, name: departPlace.CityName },
-                        arriveCity: { code: arrivePlace.CityId, name: arrivePlace.CityName },
-                        departTime: segment.DepartureDate,
-                        carriers: carriers
-                    };
-                });
-    console.log(segments);*/
     toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
   }
   return toReturn;
