@@ -52,8 +52,12 @@ module.exports = {
     var res = request('GET', url);
     var response = res.getBody();
 
-    return JSON.parse(response);
-
+    return JSON.parse(response).Places.map(function(loc) {
+      return {
+        id: loc.PlaceId,
+        name: loc.PlaceName
+      };
+    });
 
     /*
         var url = util.format(
