@@ -147,15 +147,27 @@ const actions = {
       sequence
         .then(function (next) {
             skyscanner.getLocation(departure).then(function (data) {
-                departureCode = data;
-                console.log("found departure" + data);
+                //departureCode = data;
+                for(var item in data) {
+                  var id = data.id;
+                  var name = data.name;
+                  departureCode = name;
+                  console.log("Found departure : id : " + id + " name : " + name);
+                }
+                //console.log("found departure" + data);
                 next(err);
             });
         })
         .then(function (next, err) {
             skyscanner.getLocation(arrival).then(function (data) {
-                arrivalCode = data;
-                console.log("found arrival" + data);
+                //arrivalCode = data;
+                for(var item in data) {
+                  var id = data.id;
+                  var name = data.name;
+                  arrivalCode = name;
+                  console.log("Found arrival : id : " + id + " name : " + name);
+                }
+                //console.log("found arrival" + data);
                 next(err);
             });
         })
