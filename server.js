@@ -236,8 +236,10 @@ function getLocationCode(data) {
 }
 
 function formatFlightMessage(flightInfo) {
-  var toReturn = "";
-  for (var quote in flightInfo.Quotes) {
+  var i, toReturn = "";
+  for (i = 0; i < flightInfo.Quotes.length; i++) {
+    var quote = flightInfo.Quotes[i];
+    console.log(JSON.stringify(quote));
     toReturn += "\n";
 
     toReturn += quote.MinPrice + "TL - ";
