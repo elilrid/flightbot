@@ -197,11 +197,11 @@ const actions = {
       skyscanner.setApiKey(SKYSCANNER_KEY);
       console.log("syscanner api key is set");
       console.log("getting departure");
-      var departureCode = skyscanner.getLocation(departure);
+      var departureCode = getLocationCode(skyscanner.getLocation(departure));
 
       console.log("Departure Code : " + JSON.stringify(departureCode));
 
-      var arrivalCode = skyscanner.getLocation(arrival);
+      var arrivalCode = getLocationCode(skyscanner.getLocation(arrival));
 
       console.log("Arrival Code : " + JSON.stringify(arrivalCode));
 

@@ -19,7 +19,12 @@ module.exports = {
     var res = request('GET', url);
     var response = res.getBody();
 
-    return JSON.parse(response);
+    return JSON.parse(response).Places.map(function(loc) {
+      return {
+        id: loc.PlaceId,
+        name: loc.PlaceName
+      };
+    });
 
     /*var url = util.format(
       'http://partners.api.skyscanner.net/apiservices/autosuggest/v1.0/TR/TRY/tr-TR/?query=%s&apiKey=%s',
@@ -52,12 +57,7 @@ module.exports = {
     var res = request('GET', url);
     var response = res.getBody();
 
-    return JSON.parse(response).Places.map(function(loc) {
-      return {
-        id: loc.PlaceId,
-        name: loc.PlaceName
-      };
-    });
+    return JSON.parse(response);
 
     /*
         var url = util.format(
