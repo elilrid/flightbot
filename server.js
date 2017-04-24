@@ -10,6 +10,9 @@ var crypto = require('crypto');
 var Wit = require('node-wit').Wit;
 var log = require('node-wit').log;
 
+var skyscanner = require('./skyscanner');
+var _ = require('lodash');
+
 var app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
@@ -126,12 +129,61 @@ const actions = {
     }
 
     if(context.missingDate == null  && context.missingArrival == null && context.missingDate == null) {
+      //If everything is OK, find flights
+
       var departure = context.departure;
       var arrival = context.arrival;
       var date = context.date;
 
+      var departureCode, arrivalCode;
+
       console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
-      context.foundFlights = '\nFlights from ' + departure + " to " + arrival + " on " + formatDate(new Date(date)); // we should call a weather API here
+
+      skyscanner.getLocation(departure).then(function (data) {
+          departureCode = data;
+          console.log("found departure" : data);
+      });
+
+
+      skyscanner.getLocation(arrival).then(function (data) {
+          arrivalCode = data;
+          console.log("found arrival" : data);
+      });
+
+      skyscanner.searchCache(departureCode,arrivalCode, date, date).then(function (data){
+          //data is the response of skyscanner
+          //console.log is a function that prints the terminal.
+          //console.log(data);
+          //priceAndDate is the splitted version of data.
+          var detailInformation = data.Quotes.map(function (quote) {
+
+              var segments = [quote.OutboundLeg, quote.InboundLeg].map(function (segment, index) {
+
+                  var departPlace = _.filter(data.Places, { PlaceId: segment.OriginId })[0];
+                  var arrivePlace = _.filter(data.Places, { PlaceId: segment.DestinationId })[0];
+                  var carriers = segment.CarrierIds.map(c => _.filter(data.Carriers, { CarrierId: c })[0].Name);
+
+                  return {
+                      group: index + 1,
+                      departAirport: { code: departPlace.IataCode, name: departPlace.Name },
+                      arriveAirport: { code: arrivePlace.IataCode, name: arrivePlace.Name },
+                      departCity: { code: departPlace.CityId, name: departPlace.CityName },
+                      arriveCity: { code: arrivePlace.CityId, name: arrivePlace.CityName },
+                      departTime: segment.DepartureDate,
+                      carriers: carriers
+                  };
+              });
+              console.log(segments);
+              return {
+                  //segments: segments,
+                  price: quote.MinPrice,
+                  direct: quote.Direct,
+              }
+          });
+          console.log(detailInformation);
+      });
+
+      context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
 
 
       //when everything is OK, clean up data
