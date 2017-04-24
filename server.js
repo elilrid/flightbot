@@ -26,11 +26,8 @@ const PAGE_ACCESS_TOKEN = config.get('pageAccessToken');
 const VALIDATION_TOKEN = config.get('validationToken');
 const APP_SECRET = config.get('appSecret');
 
-const SKYSCANNER_TOKEN = config.get('skyscannerApiKey');
+const SKYSCANNER_KEY = config.get('skyscannerApiKey');
 const WIT_TOKEN = config.get('witApiToken');
-
-// This API key is shared in API documentation, you should register your own
-skyscanner.setApiKey('fl989112564576873089361895446787');
 
 console.log("validation token is " + VALIDATION_TOKEN);
 console.log("page access token is " + PAGE_ACCESS_TOKEN);
@@ -149,6 +146,11 @@ const actions = {
 
       sequence
         .then(function (next) {
+          // This API key is shared in API documentation, you should register your own
+          skyscanner.setApiKey(SKYSCANNER_KEY);
+          console.log("syscanner api key is set");
+        })
+        .then(function (next,err) {
             skyscanner.getLocation(departure).then(function (data) {
                 //departureCode = data;
                 for(var item in data) {

@@ -7,9 +7,9 @@ var _ = require('lodash');
 // This API key is shared in API documentation, you should register your own
 skyscanner.setApiKey('fl989112564576873089361895446787');
 
-/*skyscanner.getLocation('esenboğa').then(function (data) {
+skyscanner.getLocation('Istanbul').then(function (data) {
     console.log(data);
-});*/
+});
 
 skyscanner.searchCache('IST-sky','KFS-sky', '2017-05-29', '2017-06-21').then(function (data){
     //data is the response of skyscanner
