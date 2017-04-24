@@ -156,7 +156,7 @@ const actions = {
           console.log("getting departure");
             skyscanner.getLocation(departure).then(function (data) {
                 //departureCode = data;
-                JSON.stringify(data);
+                console.log(JSON.stringify(data));
                 //console.log("found departure" + data);
                 next(err);
             });
@@ -165,7 +165,7 @@ const actions = {
           console.log("getting arrival");
             skyscanner.getLocation(arrival).then(function (data) {
                 //arrivalCode = data;
-                JSON.stringify(data);
+                console.log(JSON.stringify(data));
                 //console.log("found arrival" + data);
                 next(err);
             });
@@ -173,7 +173,7 @@ const actions = {
         .then(function (next, err) {
             console.log("now got departure as " + departureCode + " and arrival as " + arrivalCode + ". Searching for flights!");
             skyscanner.searchCache(departureCode,arrivalCode, date, date).then(function (data){
-              JSON.stringify(data);
+                console.log(JSON.stringify(data));
                 //data is the response of skyscanner
                 //console.log is a function that prints the terminal.
                 //console.log(data);
