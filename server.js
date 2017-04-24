@@ -273,7 +273,7 @@ const actions = {
               });
               console.log(detailInformation);
 
-              next(err, detailInformation);
+              next(err, JSON.stringify(data));
             } else {
               next(err, "");
             }
@@ -292,7 +292,7 @@ const actions = {
 
           } else {
             delete context.noFlight;
-            context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)); // we should call a weather API here
+            context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n" + detailInfo; // we should call a weather API here
             //when everything is OK, clean up data
             delete context.arrival;
             delete context.departure;
