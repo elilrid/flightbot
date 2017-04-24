@@ -136,6 +136,8 @@ const actions = {
     entities
   }) {
 
+    delete context.foundFlights;
+
     var sessionId = context.sessionId;
     var oldContext = sessions[sessionId].context;
 
@@ -211,10 +213,13 @@ const actions = {
         console.log("else detailInfo is not null");
         delete context.noFlight;
         context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n----------" + flightInfo; // we should call a weather API here
+
         //when everything is OK, clean up data
         delete context.arrival;
         delete context.departure;
         delete context.date;
+
+        console.log(JSON.stringify(context));
       }
 
       return context;
