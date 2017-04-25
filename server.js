@@ -242,8 +242,11 @@ function getLocationCode(data) {
 
 function formatFlightMessage(flightInfo) {
   var i, toReturn = "";
+  var anyFlight = false; 
   for (i = 0; i < flightInfo.Quotes.length; i++) {
-    var quote = flightInfo.Quotes[i];
+    var quote = flightInfo.Quotes[i];    
+    if(quote.hasOwnProperty('OutboundLeg')){
+    anyFlight=true;
     console.log(JSON.stringify(quote));
     toReturn += "\n";
 
@@ -256,12 +259,16 @@ function formatFlightMessage(flightInfo) {
     }
     
     toReturn += " - ";   
-    if(quote.hasOwnProperty('OutboundLeg')){
         console.log("yeah");
+    
+    toReturn += "Time : " + formatDate(new Date(quote.OutboundLeg.DepartureDate));
     }
-    toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
   }
-  return toReturn;
+  if(anyFlight){
+    return toReturn;
+  }else{
+    return "There is no flight";
+  }
 }
 
 // Setting up our bot
