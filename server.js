@@ -245,8 +245,8 @@ function formatFlightMessage(flightInfo) {
   var anyFlight = false; 
   for (i = 0; i < flightInfo.Quotes.length; i++) {
     var quote = flightInfo.Quotes[i];    
-    if(quote.hasOwnProperty('OutboundLeg')){
-    anyFlight=true;
+    
+    
     console.log(JSON.stringify(quote));
     toReturn += "\n";
 
@@ -259,9 +259,12 @@ function formatFlightMessage(flightInfo) {
     }
     
     toReturn += " - ";   
-        console.log("yeah");
-    
+    if(quote.hasOwnProperty('OutboundLeg')){   
+    anyFlight=true;
     toReturn += "Time : " + formatDate(new Date(quote.OutboundLeg.DepartureDate));
+    }else if(quote.hasOwnProperty('InboundLeg')){   
+    anyFlight=true;
+    toReturn += "Time : " + formatDate(new Date(quote.InboundLeg.DepartureDate));
     }
   }
   if(anyFlight){
