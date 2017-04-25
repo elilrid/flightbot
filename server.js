@@ -255,7 +255,10 @@ function formatFlightMessage(flightInfo) {
       toReturn += "Not a Direct Flight";
     }
     
-    toReturn += " - ";     
+    toReturn += " - ";   
+    if(quote.hasOwnProperty('OutboundLeg')){
+        console.log("yeah");
+    }
     toReturn += "Time : " + formatDate(new Date(quote.QuoteDateTime));
   }
   return toReturn;
