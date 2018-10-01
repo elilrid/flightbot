@@ -1,5 +1,5 @@
 # flightbot
-Computer Porject 2
+Computer Project 2
 
 Elif Benli
 İlkan Engin
