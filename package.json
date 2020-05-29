@@ -1,18 +1,18 @@
 {
   "start": "node server.js",
   "dependencies": {
-    "config": "^1.20.4",
-    "express":"^4.13.4",
-    "ejs": "^2.4.2",
-    "body-parser":"^1.15.0",
-    "request":"^2.72.0",
-    "bluebird":"^3.5.0",
-    "request-promise":"^4.2.0",
-    "lodash":"^4.17.4",
-    "util":"^0.10.3",
-    "node-wit":"^4.2.0",
-    "sequence":"^3.0.0",
-    "JSON":"^1.0.0",
-    "sync-request":"^4.0.2"
+    "config": "1.31.0",
+    "express": "4.17.1",
+    "ejs": "2.7.4",
+    "body-parser": "1.19.0",
+    "request": "2.88.2",
+    "bluebird": "3.7.2",
+    "request-promise": "4.2.5",
+    "lodash": "4.17.15",
+    "util": "0.10.4",
+    "node-wit": "4.3.0",
+    "sequence": "3.0.0",
+    "JSON": "1.0.0",
+    "sync-request": "4.1.0"
   }
 }
