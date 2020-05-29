@@ -1,26 +1,22 @@
-/* jshint node: true, devel: true */
 'use strict';
 
 var express = require('express');
 var bodyParser = require('body-parser');
 var config = require('config');
-var https = require('https');
 var request = require('request');
 var crypto = require('crypto');
 var Wit = require('node-wit').Wit;
 var log = require('node-wit').log;
-var Sequence = require('sequence').Sequence;
 
 var skyscanner = require('./skyscanner');
 var _ = require('lodash');
 
-
-var sequence = Sequence.create();
 var app = express();
-app.set('view engine', 'ejs');
-app.use(bodyParser.json({
-  verify: verifyRequestSignature
-}));
+app.use(
+  bodyParser.json({
+    verify: verifyRequestSignature,
+  })
+);
 app.use(express.static('public'));
 
 //tokens for facebook
@@ -31,10 +27,9 @@ const APP_SECRET = config.get('appSecret');
 const SKYSCANNER_KEY = config.get('skyscannerApiKey');
 const WIT_TOKEN = config.get('witApiToken');
 
-console.log("validation token is " + VALIDATION_TOKEN);
-console.log("page access token is " + PAGE_ACCESS_TOKEN);
-console.log("skyscanner key is " + SKYSCANNER_KEY);
-
+console.log('validation token is ' + VALIDATION_TOKEN);
+console.log('page access token is ' + PAGE_ACCESS_TOKEN);
+console.log('skyscanner key is ' + SKYSCANNER_KEY);
 
 // This will contain all user sessions.
 // Each session has an entry:
@@ -44,7 +39,7 @@ const sessions = {};
 const findOrCreateSession = (fbid) => {
   let sessionId;
   // Let's see if we already have a session for the user fbid
-  Object.keys(sessions).forEach(k => {
+  Object.keys(sessions).forEach((k) => {
     if (sessions[k].fbid === fbid) {
       // Yep, got it!
       sessionId = k;
@@ -55,14 +50,16 @@ const findOrCreateSession = (fbid) => {
     sessionId = new Date().toISOString();
     sessions[sessionId] = {
       fbid: fbid,
-      context: {}
+      context: {},
     };
   }
   return sessionId;
 };
 
 const entityValue = (entities, entity, order) => {
-  const val = entities && entities[entity] &&
+  const val =
+    entities &&
+    entities[entity] &&
     Array.isArray(entities[entity]) &&
     entities[entity].length > 0 &&
     entities[entity][order - 1].value;
@@ -80,14 +77,42 @@ function formatDate(date) {
   hours = hours ? hours : 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? '0' + minutes : minutes;
   //var strTime = hours + ':' + minutes + ' ' + ampm;
-  if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) < 10) {
-    return "0" + (date.getDate() + 1) + "/0" + (date.getMonth() + 1) + "/" + date.getFullYear();
-  } else if ((date.getMonth() + 1) >= 10 && (date.getDate() + 1) < 10) {
-    return "0" + (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
-  } else if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) >= 10) {
-    return (date.getDate() + 1) + "/0" + (date.getMonth() + 1) + "/" + date.getFullYear();
+  if (date.getMonth() + 1 < 10 && date.getDate() + 1 < 10) {
+    return (
+      '0' +
+      (date.getDate() + 1) +
+      '/0' +
+      (date.getMonth() + 1) +
+      '/' +
+      date.getFullYear()
+    );
+  } else if (date.getMonth() + 1 >= 10 && date.getDate() + 1 < 10) {
+    return (
+      '0' +
+      (date.getDate() + 1) +
+      '/' +
+      (date.getMonth() + 1) +
+      '/' +
+      date.getFullYear()
+    );
+  } else if (date.getMonth() + 1 < 10 && date.getDate() + 1 >= 10) {
+    return (
+      date.getDate() +
+      1 +
+      '/0' +
+      (date.getMonth() + 1) +
+      '/' +
+      date.getFullYear()
+    );
   } else {
-    return (date.getDate() + 1) + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    return (
+      date.getDate() +
+      1 +
+      '/' +
+      (date.getMonth() + 1) +
+      '/' +
+      date.getFullYear()
+    );
   }
 }
 
@@ -99,24 +124,44 @@ function formatDateForSkyScanner(date) {
   hours = hours ? hours : 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? '0' + minutes : minutes;
   //var strTime = hours + ':' + minutes + ' ' + ampm;
-  if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) < 10) {
-    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1);
-  } else if ((date.getMonth() + 1) >= 10 && (date.getDate() + 1) < 10) {
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-0" + (date.getDate() + 1);
-  } else if ((date.getMonth() + 1) < 10 && (date.getDate() + 1) >= 10) {
-    return date.getFullYear() + "-0" + (date.getMonth() + 1) + "-" + (date.getDate() + 1);
+  if (date.getMonth() + 1 < 10 && date.getDate() + 1 < 10) {
+    return (
+      date.getFullYear() +
+      '-0' +
+      (date.getMonth() + 1) +
+      '-0' +
+      (date.getDate() + 1)
+    );
+  } else if (date.getMonth() + 1 >= 10 && date.getDate() + 1 < 10) {
+    return (
+      date.getFullYear() +
+      '-' +
+      (date.getMonth() + 1) +
+      '-0' +
+      (date.getDate() + 1)
+    );
+  } else if (date.getMonth() + 1 < 10 && date.getDate() + 1 >= 10) {
+    return (
+      date.getFullYear() +
+      '-0' +
+      (date.getMonth() + 1) +
+      '-' +
+      (date.getDate() + 1)
+    );
   } else {
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1);
+    return (
+      date.getFullYear() +
+      '-' +
+      (date.getMonth() + 1) +
+      '-' +
+      (date.getDate() + 1)
+    );
   }
 }
 
 // Our bot actions
 const actions = {
-  send({
-    sessionId
-  }, {
-    text
-  }) {
+  send({ sessionId }, { text }) {
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
     const recipientId = sessions[sessionId].fbid;
@@ -126,16 +171,12 @@ const actions = {
       // We return a promise to let our bot know when we're done sending
       return sendTextMessage(recipientId, text);
     } else {
-      console.error('Oops! Couldn\'t find user for session:', sessionId);
+      console.error("Oops! Couldn't find user for session:", sessionId);
       // Giving the wheel back to our bot
-      return Promise.resolve()
+      return Promise.resolve();
     }
   },
-  findFlights({
-    context,
-    entities
-  }) {
-
+  findFlights({ context, entities }) {
     delete context.foundFlights;
 
     var sessionId = context.sessionId;
@@ -173,7 +214,11 @@ const actions = {
       delete context.missingDate;
     }
 
-    if (context.missingDate == null && context.missingArrival == null && context.missingDate == null) {
+    if (
+      context.missingDate == null &&
+      context.missingArrival == null &&
+      context.missingDate == null
+    ) {
       //If everything is OK, find flights
 
       var departure = context.departure;
@@ -182,37 +227,53 @@ const actions = {
 
       var departureCode, arrivalCode;
 
-      console.log('departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date);
+      console.log(
+        'departure : ' + departure + ' arrival : ' + arrival + ' date : ' + date
+      );
 
       var err, detailInformation;
       var done = false;
 
       skyscanner.setApiKey(SKYSCANNER_KEY);
-      console.log("syscanner api key is set");
-      console.log("getting departure");
+      console.log('syscanner api key is set');
+      console.log('getting departure');
       var departureCode = getLocationCode(skyscanner.getLocation(departure));
 
-      console.log("Departure Code : " + departureCode);
+      console.log('Departure Code : ' + departureCode);
 
       var arrivalCode = getLocationCode(skyscanner.getLocation(arrival));
 
-      console.log("Arrival Code : " + arrivalCode);
+      console.log('Arrival Code : ' + arrivalCode);
 
-      var flightInfo = formatFlightMessage(skyscanner.searchCache(departureCode, arrivalCode, formatDateForSkyScanner(new Date(date)), formatDateForSkyScanner(new Date(date))));
+      var flightInfo = formatFlightMessage(
+        skyscanner.searchCache(
+          departureCode,
+          arrivalCode,
+          formatDateForSkyScanner(new Date(date)),
+          formatDateForSkyScanner(new Date(date))
+        )
+      );
 
-      if (flightInfo == "") {
-        console.log("if detailInfo is null");
+      if (flightInfo == '') {
+        console.log('if detailInfo is null');
         context.noFlight = true;
         delete context.foundFlights;
         //when everything is OK, clean up data
         delete context.arrival;
         delete context.departure;
         delete context.date;
-
       } else {
-        console.log("else detailInfo is not null");
+        console.log('else detailInfo is not null');
         delete context.noFlight;
-        context.foundFlights = '\nFlights from ' + departureCode + " to " + arrivalCode + " on " + formatDate(new Date(date)) + "\n----------" + flightInfo; // we should call a weather API here
+        context.foundFlights =
+          '\nFlights from ' +
+          departureCode +
+          ' to ' +
+          arrivalCode +
+          ' on ' +
+          formatDate(new Date(date)) +
+          '\n----------' +
+          flightInfo; // we should call a weather API here
 
         //when everything is OK, clean up data
         delete context.arrival;
@@ -226,14 +287,13 @@ const actions = {
     } else {
       return context;
     }
-
   },
   // You should implement your custom actions here
   // See https://wit.ai/docs/quickstart
 };
 
 function getLocationCode(data) {
-  var code = "";
+  var code = '';
   if (data.length > 0) {
     code = data[0].id;
   }
@@ -241,36 +301,38 @@ function getLocationCode(data) {
 }
 
 function formatFlightMessage(flightInfo) {
-  var i, toReturn = "";
-  var anyFlight = false; 
+  var i,
+    toReturn = '';
+  var anyFlight = false;
   for (i = 0; i < flightInfo.Quotes.length; i++) {
-    var quote = flightInfo.Quotes[i];    
-    
-    
-    console.log(JSON.stringify(quote));
-    toReturn += "\n";
+    var quote = flightInfo.Quotes[i];
 
-    toReturn += quote.MinPrice + "TL - ";
+    console.log(JSON.stringify(quote));
+    toReturn += '\n';
+
+    toReturn += quote.MinPrice + 'TL - ';
 
     if (quote.Direct) {
-      toReturn += "Direct Flight";
+      toReturn += 'Direct Flight';
     } else {
-      toReturn += "Not a Direct Flight";
+      toReturn += 'Not a Direct Flight';
     }
-    
-    toReturn += " - ";   
-    if(quote.hasOwnProperty('OutboundLeg')){   
-    anyFlight=true;
-    toReturn += "Time : " + formatDate(new Date(quote.OutboundLeg.DepartureDate));
-    }else if(quote.hasOwnProperty('InboundLeg')){   
-    anyFlight=true;
-    toReturn += "Time : " + formatDate(new Date(quote.InboundLeg.DepartureDate));
+
+    toReturn += ' - ';
+    if (quote.hasOwnProperty('OutboundLeg')) {
+      anyFlight = true;
+      toReturn +=
+        'Time : ' + formatDate(new Date(quote.OutboundLeg.DepartureDate));
+    } else if (quote.hasOwnProperty('InboundLeg')) {
+      anyFlight = true;
+      toReturn +=
+        'Time : ' + formatDate(new Date(quote.InboundLeg.DepartureDate));
     }
   }
-  if(anyFlight){
+  if (anyFlight) {
     return toReturn;
-  }else{
-    return "There is no flight";
+  } else {
+    return 'There is no flight';
   }
 }
 
@@ -278,22 +340,21 @@ function formatFlightMessage(flightInfo) {
 const wit = new Wit({
   accessToken: WIT_TOKEN,
   actions,
-  logger: new log.Logger(log.INFO)
+  logger: new log.Logger(log.INFO),
 });
 
 //webhook endpoints
-app.get('/flights', function(req, res) {
-
-  if (req.query['hub.mode'] === 'subscribe' &&
-    req.query['hub.verify_token'] === VALIDATION_TOKEN) {
-    console.log("Validating webhook");
+app.get('/flights', function (req, res) {
+  if (
+    req.query['hub.mode'] === 'subscribe' &&
+    req.query['hub.verify_token'] === VALIDATION_TOKEN
+  ) {
+    console.log('Validating webhook');
     res.status(200).send(req.query['hub.challenge']);
   } else {
-    console.error("Failed validation. Make sure the validation tokens match.");
+    console.error('Failed validation. Make sure the validation tokens match.');
     res.sendStatus(403);
   }
-
-  //res.status(200).send(req.query['hub.challenge']);
 });
 
 /*
@@ -303,41 +364,31 @@ app.get('/flights', function(req, res) {
  * https://developers.facebook.com/docs/messenger-platform/product-overview/setup#subscribe_app
  *
  */
-app.post('/flights', function(req, res) {
+app.post('/flights', function (req, res) {
   var data = req.body;
-  console.log("a request has come!");
-  console.log("request " + req);
-  console.log("data " + data);
+  console.log('a request has come!');
+  console.log('request ' + req);
+  console.log('data ' + data);
   // Make sure this is a page subscription
   if (data.object == 'page') {
     // Iterate over each entry
     // There may be multiple if batched
-    data.entry.forEach(function(pageEntry) {
+    data.entry.forEach(function (pageEntry) {
       var pageID = pageEntry.id;
       var timeOfEvent = pageEntry.time;
 
       // Iterate over each messaging event
-      pageEntry.messaging.forEach(function(messagingEvent) {
-        console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+      pageEntry.messaging.forEach(function (messagingEvent) {
+        console.log(
+          'Webhook received unknown messagingEvent: ',
+          messagingEvent
+        );
         if (messagingEvent.message) {
           receivedMessage(messagingEvent);
         }
         if (messagingEvent.optin) {
           //receivedAuthentication(messagingEvent);
         }
-        /*else if (messagingEvent.message) {
-          receivedMessage(messagingEvent);
-        } else if (messagingEvent.delivery) {
-          receivedDeliveryConfirmation(messagingEvent);
-        } else if (messagingEvent.postback) {
-          receivedPostback(messagingEvent);
-        } else if (messagingEvent.read) {
-          receivedMessageRead(messagingEvent);
-        } else if (messagingEvent.account_linking) {
-          receivedAccountLink(messagingEvent);
-        } else {
-
-        }*/
       });
     });
 
@@ -358,18 +409,19 @@ app.post('/flights', function(req, res) {
  *
  */
 function receivedAuthentication(event) {
-
-  console.console.log("Received authentication!");
+  console.console.log('Received authentication!');
 
   var senderID = event.sender.id;
-
 
   // We retrieve the user's current session, or create one if it doesn't exist
   // This is needed for our bot to figure out the conversation history
   const sessionId = findOrCreateSession(senderID);
   sessions[sessionId] = {};
 
-  sendTextMessage(senderID, "Welcome to Flight Bot! I can help you to find flights for you!");
+  sendTextMessage(
+    senderID,
+    'Welcome to Flight Bot! I can help you to find flights for you!'
+  );
 }
 
 //this function is called when a user sends message from messenger
@@ -378,8 +430,12 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-  console.log("Received message for user %d and page %d at %d with message:",
-    senderID, recipientID, timeOfMessage);
+  console.log(
+    'Received message for user %d and page %d at %d with message:',
+    senderID,
+    recipientID,
+    timeOfMessage
+  );
   console.log(JSON.stringify(message));
 
   var messageId = message.mid;
@@ -401,11 +457,13 @@ function receivedMessage(event) {
 
     // Let's forward the message to the Wit.ai Bot Engine
     // This will run all actions until our bot has nothing left to do
-    wit.runActions(
+    wit
+      .runActions(
         sessionId, // the user's current session
         messageText, // the user's message
         sessions[sessionId].context // the user's current session state
-      ).then((context) => {
+      )
+      .then((context) => {
         // Our bot did everything it has to do.
         // Now it's waiting for further messages to proceed.
         console.log('Waiting for next user messages');
@@ -422,10 +480,13 @@ function receivedMessage(event) {
       })
       .catch((err) => {
         console.error('Oops! Got an error from Wit: ', err.stack || err);
-      })
+      });
     return;
   } else if (messageAttachments) {
-    sendTextMessage(senderID, "Sorry I can only process text messages for now.");
+    sendTextMessage(
+      senderID,
+      'Sorry I can only process text messages for now.'
+    );
   }
 }
 
@@ -439,12 +500,12 @@ function sendTextMessage(recipientId, messageText) {
   }
   var messageData = {
     recipient: {
-      id: recipientId
+      id: recipientId,
     },
     message: {
       text: messageText,
-      metadata: "DEVELOPER_DEFINED_METADATA"
-    }
+      metadata: 'DEVELOPER_DEFINED_METADATA',
+    },
   };
 
   callSendAPI(messageData);
@@ -456,42 +517,46 @@ function sendTextMessage(recipientId, messageText) {
  *
  */
 function callSendAPI(messageData) {
-  request({
-    uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: {
-      access_token: PAGE_ACCESS_TOKEN
+  request(
+    {
+      uri: 'https://graph.facebook.com/v2.6/me/messages',
+      qs: {
+        access_token: PAGE_ACCESS_TOKEN,
+      },
+      method: 'POST',
+      json: messageData,
     },
-    method: 'POST',
-    json: messageData
+    function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var recipientId = body.recipient_id;
+        var messageId = body.message_id;
 
-  }, function(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
-      if (messageId) {
-        console.log("Successfully sent message with id %s to recipient %s",
-          messageId, recipientId);
+        if (messageId) {
+          console.log(
+            'Successfully sent message with id %s to recipient %s',
+            messageId,
+            recipientId
+          );
+        } else {
+          console.log(
+            'Successfully called Send API for recipient %s',
+            recipientId
+          );
+        }
       } else {
-        console.log("Successfully called Send API for recipient %s",
-          recipientId);
+        console.error(
+          'Failed calling Send API',
+          response.statusCode,
+          response.statusMessage,
+          body.error
+        );
       }
-    } else {
-      console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
     }
-  });
+  );
 }
 
-/*
- * Verify that the callback came from Facebook. Using the App Secret from
- * the App Dashboard, we can verify the signature that is sent with each
- * callback in the x-hub-signature field, located in the header.
- *
- * https://developers.facebook.com/docs/graph-api/webhooks#setup
- *
- */
 function verifyRequestSignature(req, res, buf) {
-  var signature = req.headers["x-hub-signature"];
+  var signature = req.headers['x-hub-signature'];
 
   if (!signature) {
     // For testing, let's log an error. In production, you should throw an
@@ -502,7 +567,8 @@ function verifyRequestSignature(req, res, buf) {
     var method = elements[0];
     var signatureHash = elements[1];
 
-    var expectedHash = crypto.createHmac('sha1', APP_SECRET)
+    var expectedHash = crypto
+      .createHmac('sha1', APP_SECRET)
       .update(buf)
       .digest('hex');
 
@@ -512,30 +578,16 @@ function verifyRequestSignature(req, res, buf) {
   }
 }
 
-// app.get('/getFlights', function (req, res) {
-//    //res.status(code || 500).json({"error": message});
-//    fs.readFile( __dirname + "/" + "flights.json", 'utf8', function (err, data) {
-//        console.log( data );
-//        res.end( data );
-//    });
-// })
-//
-// app.post('/postFlights', function (req, res) {
-//    res.status(200).json({"success": true});
-// })
-
-app.get('/policy', function(req, res) {
+app.get('/policy', function (req, res) {
   res.render('policy');
   res.status(200).json({
-    "success": true
+    success: true,
   });
-})
+});
 
-var server = app.listen(process.env.PORT || 8080, function() {
+var server = app.listen(process.env.PORT || 5050, function () {
+  var host = server.address().address;
+  var port = server.address().port;
 
-  var host = server.address().address
-  var port = server.address().port
-
-  console.log("Example app listening at http://%s:%s", host, port)
-
-})
+  console.log('App is listening at http://%s:%s', host, port);
+});
