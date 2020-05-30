@@ -1,20 +1,20 @@
 {
-   "flight1" : {
-      "name" : "mahesh",
-	  "password" : "password1",
-	  "profession" : "teacher",
-	  "id": 1
+   "flight1": {
+      "name": "mahesh",
+      "password": "password1",
+      "profession": "teacher",
+      "id": 1
    },
-   "flight2" : {
-      "name" : "suresh",
-	  "password" : "password2",
-	  "profession" : "librarian",
-	  "id": 2
+   "flight2": {
+      "name": "suresh",
+      "password": "password2",
+      "profession": "librarian",
+      "id": 2
    },
-   "flight3" : {
-      "name" : "ramesh",
-	  "password" : "password3",
-	  "profession" : "clerk",
-	  "id": 3
+   "flight3": {
+      "name": "ramesh",
+      "password": "password3",
+      "profession": "clerk",
+      "id": 3
    }
 }
