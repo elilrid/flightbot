@@ -2,15 +2,11 @@
   "start": "node server.js",
   "dependencies": {
     "JSON": "1.0.0",
-    "bluebird": "3.7.2",
     "body-parser": "1.19.0",
     "config": "1.31.0",
     "express": "4.17.1",
-    "lodash": "4.17.15",
     "node-wit": "4.3.0",
-    "request": "2.88.2",
     "request-promise": "4.2.5",
-    "sync-request": "4.1.0",
     "util": "0.10.4"
   }
 }
