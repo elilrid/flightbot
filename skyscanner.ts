@@ -2,12 +2,12 @@ import request, { FormData } from 'then-request';
 import util from 'util';
 
 export class SkyScanner {
-  private apiKey: string;
+  private apiKey: string = '';
   setApiKey(key: string): void {
     this.apiKey = key;
   }
 
-  getLocations(searchLocation): Promise<{ id: string, name: string }[]> {
+  getLocations(searchLocation: string): Promise<{ id: string, name: string }[]> {
     var url = util.format(
       'http://partners.api.skyscanner.net/apiservices/autosuggest/v1.0/TR/TRY/tr-TR/?query=%s&apiKey=%s',
       encodeURIComponent(searchLocation),
@@ -31,7 +31,7 @@ export class SkyScanner {
       .catch(err => []);
   }
 
-  searchCache(fromLocation, toLocation, fromDate, toDate) {
+  searchCache(fromLocation: string, toLocation: string, fromDate: string, toDate: string) {
     var url = util.format(
       'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/TR/TRY/tr-TR/%s/%s/%s/%s?apiKey=%s',
       encodeURIComponent(fromLocation),
@@ -41,11 +41,11 @@ export class SkyScanner {
       this.apiKey);
 
     return request('GET', url).then(response => {
-      return JSON.parse(response.getBody());
+      return JSON.parse(response.getBody().toString());
     });
   }
 
-  searchLive(fromLocation, toLocation, fromDate, toDate, adults, children, infants, fastMode) {
+  searchLive(fromLocation: string, toLocation: string, fromDate: string, toDate: string, adults: number, children: number, infants: number, fastMode: boolean) {
     var apiKey = this.apiKey;
     var delay = 1000;
     var pull = this.pull;
@@ -75,7 +75,7 @@ export class SkyScanner {
     return request('POST', 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0', options).then(session => {
       return pull(session.url, pull, delay, fastMode).then(response => {
         var data = JSON.parse(response.getBody());
-        var toReturn = data.Itineraries.map(function (itin) {
+        var toReturn = data.Itineraries.map(itin => {
           var outboundLeg = data.Legs.filter(leg => leg.Id === itin.OutboundLegId)[0];
           var inboundLeg = data.Legs.filter(leg => leg.Id === itin.InboundLegId)[0];
 
@@ -139,7 +139,7 @@ export class SkyScanner {
       var currentRequest = request('GET', url);
       return currentRequest.then(
         response => {
-          var data = JSON.parse(response.getBody());
+          var data = JSON.parse(response.getBody().toString());
           if (fastMode && data.Itineraries.length) {
             return currentRequest;
           } else if (data.Status === 'UpdatesPending') {
