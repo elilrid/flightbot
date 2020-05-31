@@ -53,9 +53,9 @@ export class SkyScanner {
     var form = new FormData({});
 
     form.append('cabinclass', 'Economy');
-    form.append('country', 'UK');
-    form.append('currency', 'GBP');
-    form.append('locale', 'en-GB');
+    form.append('country', 'TR');
+    form.append('currency', 'TRY');
+    form.append('locale', 'tr-TR');
     form.append('locationSchema', 'iata');
     form.append('originplace', fromLocation);
     form.append('destinationplace', toLocation);
