@@ -4,8 +4,6 @@ import crypto from 'crypto';
 import express from 'express';
 import { MessageHandler } from './message-handler';
 
-var _ = require('lodash');
-
 var app = express();
 app.use(
   bodyParser.json({
@@ -64,12 +62,12 @@ app.post('/flights', function (req, res) {
   if (data.object == 'page') {
     // Iterate over each entry
     // There may be multiple if batched
-    data.entry.forEach(pageEntry => {
+    data.entry.forEach((pageEntry: any) => {
       var pageID = pageEntry.id;
       var timeOfEvent = pageEntry.time;
 
       // Iterate over each messaging event
-      pageEntry.messaging.forEach(messagingEvent => {
+      pageEntry.messaging.forEach((messagingEvent: any) => {
         console.log(
           'Webhook received unknown messagingEvent: ',
           messagingEvent
@@ -91,7 +89,7 @@ app.post('/flights', function (req, res) {
   }
 });
 
-function verifyRequestSignature(req, res, buf) {
+function verifyRequestSignature(req: any, res: any, buf: any) {
   var signature = req.headers['x-hub-signature'];
 
   if (!signature) {

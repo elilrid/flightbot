@@ -6,7 +6,7 @@ export const actions = {
   send({ sessionId }, { text }) {
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
-    const recipientId = sessions[sessionId].fbid;
+    const recipientId = MessageHandler.Instance.getSession(sessionId)?.fbid;
     if (recipientId) {
       // Yay, we found our recipient!
       // Let's forward our bot response to her.
@@ -21,12 +21,12 @@ export const actions = {
   findFlights({ context, entities }) {
     delete context.foundFlights;
 
-    var sessionId = context.sessionId;
-    var oldContext = sessions[sessionId].context;
+    let sessionId = context.sessionId;
+    let oldContext = sessions[sessionId].context;
 
-    var oldDeparture = oldContext.departure;
-    var oldArrival = oldContext.arrival;
-    var oldDate = oldContext.date;
+    let oldDeparture = oldContext.departure;
+    let oldArrival = oldContext.arrival;
+    let oldDate = oldContext.date;
 
     if (oldDeparture == null && entityValue(entities, 'departure', 1) == null) {
       context.missingDeparture = true;
@@ -79,15 +79,15 @@ export const actions = {
       skyscanner.setApiKey(SKYSCANNER_KEY);
       console.log('syscanner api key is set');
       console.log('getting departure');
-      var departureCode = getLocationCode(skyscanner.getLocation(departure));
+      let departureCode = getLocationCode(skyscanner.getLocation(departure));
 
       console.log('Departure Code : ' + departureCode);
 
-      var arrivalCode = getLocationCode(skyscanner.getLocation(arrival));
+      let arrivalCode = getLocationCode(skyscanner.getLocation(arrival));
 
       console.log('Arrival Code : ' + arrivalCode);
 
-      var flightInfo = formatFlightMessage(
+      let flightInfo = formatFlightMessage(
         skyscanner.searchCache(
           departureCode,
           arrivalCode,

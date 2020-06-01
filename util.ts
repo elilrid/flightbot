@@ -88,7 +88,7 @@ export const formatDateForSkyScanner = (date: Date): string => {
   }
 }
 
-export const getLocationCode = (data) => {
+export const getLocationCode = (data: any) => {
   var code = '';
   if (data.length > 0) {
     code = data[0].id;

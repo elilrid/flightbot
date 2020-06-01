@@ -3,7 +3,7 @@ import { log, Wit } from "node-wit";
 import { actions } from './flight-actions';
 
 export class FlightWit {
-  private _wit: Wit | undefined;
+  private static _wit: Wit | undefined;
   // Setting up our bot
   public static get Wit(): Wit {
     if (!this._wit) {

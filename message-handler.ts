@@ -19,7 +19,7 @@ export class MessageHandler {
   // This will contain all user sessions.
   // Each session has an entry:
   // sessionId -> {fbid: facebookUserId, context: sessionState}
-  sessions: FacebookSession[] = [];
+  private sessions: FacebookSession[] = [];
 
   public findOrCreateSession(fbid: string): number {
     // Let's see if we already have a session for the user fbid
@@ -35,6 +35,12 @@ export class MessageHandler {
     return sessionId;
   };
 
+  public getSession(sessionId: number): FacebookSession | undefined {
+    if (this.sessions.length < sessionId) {
+      return undefined;
+    }
+    return this.sessions[sessionId];
+  }
 
   //this function is called when a user sends message from messenger
   public receivedMessage(event: any): void {
@@ -107,7 +113,7 @@ export class MessageHandler {
   * https://developers.facebook.com/docs/messenger-platform/webhook-reference/authentication
   *
   */
-  public receivedAuthentication(event) {
+  public receivedAuthentication(event: any) {
     console.log('Received authentication!');
 
     var senderID = event.sender.id;
@@ -123,7 +129,7 @@ export class MessageHandler {
     );
   }
 
-  private formatFlightMessage(flightInfo): string {
+  private formatFlightMessage(flightInfo: any): string {
     var i,
       toReturn = '';
     var anyFlight = false;
