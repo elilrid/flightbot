@@ -1,3 +1,6 @@
+import { MessageHandler } from "../message-handler";
+import { getLocationCode } from "../util";
+
 // Our bot actions
 export const actions = {
   send({ sessionId }, { text }) {
@@ -8,7 +11,7 @@ export const actions = {
       // Yay, we found our recipient!
       // Let's forward our bot response to her.
       // We return a promise to let our bot know when we're done sending
-      return sendTextMessage(recipientId, text);
+      return MessageHandler.Instance.sendTextMessage(recipientId, text);
     } else {
       console.error("Oops! Couldn't find user for session:", sessionId);
       // Giving the wheel back to our bot

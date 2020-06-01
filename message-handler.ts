@@ -2,16 +2,19 @@ import config from 'config';
 import request from 'then-request';
 import { FacebookSession } from './models/facebook-session.model';
 import { MessageData } from './models/message-data.model';
+import { formatDate } from './util';
 import { FlightWit } from './wit/flight-wit';
 
 export class MessageHandler {
-  private _instance: MessageHandler | undefined;
-  public get Instance(): MessageHandler {
+  private static _instance: MessageHandler | undefined;
+  public static get Instance(): MessageHandler {
     if (!this._instance) {
       this._instance = new MessageHandler();
     }
     return this._instance;
   }
+
+  private constructor() { }
 
   // This will contain all user sessions.
   // Each session has an entry:
@@ -95,6 +98,67 @@ export class MessageHandler {
       );
     }
   }
+
+  /*
+  * Authorization Event
+  *
+  * The value for 'optin.ref' is defined in the entry point. For the "Send to
+  * Messenger" plugin, it is the 'data-ref' field. Read more at
+  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/authentication
+  *
+  */
+  public receivedAuthentication(event) {
+    console.log('Received authentication!');
+
+    var senderID = event.sender.id;
+
+    // We retrieve the user's current session, or create one if it doesn't exist
+    // This is needed for our bot to figure out the conversation history
+    const sessionId = MessageHandler.Instance.findOrCreateSession(senderID);
+    this.sessions[sessionId] = new FacebookSession();
+
+    this.sendTextMessage(
+      senderID,
+      'Welcome to Flight Bot! I can help you to find flights for you!'
+    );
+  }
+
+  private formatFlightMessage(flightInfo): string {
+    var i,
+      toReturn = '';
+    var anyFlight = false;
+    for (i = 0; i < flightInfo.Quotes.length; i++) {
+      var quote = flightInfo.Quotes[i];
+
+      console.log(JSON.stringify(quote));
+      toReturn += '\n';
+
+      toReturn += quote.MinPrice + 'TL - ';
+
+      if (quote.Direct) {
+        toReturn += 'Direct Flight';
+      } else {
+        toReturn += 'Not a Direct Flight';
+      }
+
+      toReturn += ' - ';
+      if (quote.hasOwnProperty('OutboundLeg')) {
+        anyFlight = true;
+        toReturn +=
+          'Time : ' + formatDate(new Date(quote.OutboundLeg.DepartureDate));
+      } else if (quote.hasOwnProperty('InboundLeg')) {
+        anyFlight = true;
+        toReturn +=
+          'Time : ' + formatDate(new Date(quote.InboundLeg.DepartureDate));
+      }
+    }
+    if (anyFlight) {
+      return toReturn;
+    } else {
+      return 'There is no flight';
+    }
+  }
+
 
   /*
    * Send a text message using the Send API.

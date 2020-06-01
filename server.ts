@@ -2,6 +2,7 @@ import bodyParser from 'body-parser';
 import config from 'config';
 import crypto from 'crypto';
 import express from 'express';
+import { MessageHandler } from './message-handler';
 
 var _ = require('lodash');
 
@@ -14,13 +15,11 @@ app.use(
 app.use(express.static('public'));
 
 //tokens for facebook
-const PAGE_ACCESS_TOKEN = ;
-const VALIDATION_TOKEN = config.get('validationToken');
-const APP_SECRET = config.get('appSecret');
+const VALIDATION_TOKEN = config.get('validationToken') as string;
+const APP_SECRET = config.get('appSecret') as string;
 
 
 console.log('validation token is ' + VALIDATION_TOKEN);
-console.log('page access token is ' + PAGE_ACCESS_TOKEN);
 
 const entityValue = (entities, entity, order) => {
   const val =
@@ -34,142 +33,6 @@ const entityValue = (entities, entity, order) => {
   }
   return typeof val === 'object' ? val.value : val;
 };
-
-function formatDate(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? '0' + minutes : minutes;
-  //var strTime = hours + ':' + minutes + ' ' + ampm;
-  if (date.getMonth() + 1 < 10 && date.getDate() + 1 < 10) {
-    return (
-      '0' +
-      (date.getDate() + 1) +
-      '/0' +
-      (date.getMonth() + 1) +
-      '/' +
-      date.getFullYear()
-    );
-  } else if (date.getMonth() + 1 >= 10 && date.getDate() + 1 < 10) {
-    return (
-      '0' +
-      (date.getDate() + 1) +
-      '/' +
-      (date.getMonth() + 1) +
-      '/' +
-      date.getFullYear()
-    );
-  } else if (date.getMonth() + 1 < 10 && date.getDate() + 1 >= 10) {
-    return (
-      date.getDate() +
-      1 +
-      '/0' +
-      (date.getMonth() + 1) +
-      '/' +
-      date.getFullYear()
-    );
-  } else {
-    return (
-      date.getDate() +
-      1 +
-      '/' +
-      (date.getMonth() + 1) +
-      '/' +
-      date.getFullYear()
-    );
-  }
-}
-
-function formatDateForSkyScanner(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? '0' + minutes : minutes;
-  //var strTime = hours + ':' + minutes + ' ' + ampm;
-  if (date.getMonth() + 1 < 10 && date.getDate() + 1 < 10) {
-    return (
-      date.getFullYear() +
-      '-0' +
-      (date.getMonth() + 1) +
-      '-0' +
-      (date.getDate() + 1)
-    );
-  } else if (date.getMonth() + 1 >= 10 && date.getDate() + 1 < 10) {
-    return (
-      date.getFullYear() +
-      '-' +
-      (date.getMonth() + 1) +
-      '-0' +
-      (date.getDate() + 1)
-    );
-  } else if (date.getMonth() + 1 < 10 && date.getDate() + 1 >= 10) {
-    return (
-      date.getFullYear() +
-      '-0' +
-      (date.getMonth() + 1) +
-      '-' +
-      (date.getDate() + 1)
-    );
-  } else {
-    return (
-      date.getFullYear() +
-      '-' +
-      (date.getMonth() + 1) +
-      '-' +
-      (date.getDate() + 1)
-    );
-  }
-}
-
-function getLocationCode(data) {
-  var code = '';
-  if (data.length > 0) {
-    code = data[0].id;
-  }
-  return code;
-}
-
-function formatFlightMessage(flightInfo) {
-  var i,
-    toReturn = '';
-  var anyFlight = false;
-  for (i = 0; i < flightInfo.Quotes.length; i++) {
-    var quote = flightInfo.Quotes[i];
-
-    console.log(JSON.stringify(quote));
-    toReturn += '\n';
-
-    toReturn += quote.MinPrice + 'TL - ';
-
-    if (quote.Direct) {
-      toReturn += 'Direct Flight';
-    } else {
-      toReturn += 'Not a Direct Flight';
-    }
-
-    toReturn += ' - ';
-    if (quote.hasOwnProperty('OutboundLeg')) {
-      anyFlight = true;
-      toReturn +=
-        'Time : ' + formatDate(new Date(quote.OutboundLeg.DepartureDate));
-    } else if (quote.hasOwnProperty('InboundLeg')) {
-      anyFlight = true;
-      toReturn +=
-        'Time : ' + formatDate(new Date(quote.InboundLeg.DepartureDate));
-    }
-  }
-  if (anyFlight) {
-    return toReturn;
-  } else {
-    return 'There is no flight';
-  }
-}
-
-
 
 //webhook endpoints
 app.get('/flights', function (req, res) {
@@ -201,21 +64,21 @@ app.post('/flights', function (req, res) {
   if (data.object == 'page') {
     // Iterate over each entry
     // There may be multiple if batched
-    data.entry.forEach(function (pageEntry) {
+    data.entry.forEach(pageEntry => {
       var pageID = pageEntry.id;
       var timeOfEvent = pageEntry.time;
 
       // Iterate over each messaging event
-      pageEntry.messaging.forEach(function (messagingEvent) {
+      pageEntry.messaging.forEach(messagingEvent => {
         console.log(
           'Webhook received unknown messagingEvent: ',
           messagingEvent
         );
         if (messagingEvent.message) {
-          receivedMessage(messagingEvent);
+          MessageHandler.Instance.receivedMessage(messagingEvent);
         }
         if (messagingEvent.optin) {
-          //receivedAuthentication(messagingEvent);
+          MessageHandler.Instance.receivedAuthentication(messagingEvent);
         }
       });
     });
@@ -227,30 +90,6 @@ app.post('/flights', function (req, res) {
     res.sendStatus(200);
   }
 });
-
-/*
- * Authorization Event
- *
- * The value for 'optin.ref' is defined in the entry point. For the "Send to
- * Messenger" plugin, it is the 'data-ref' field. Read more at
- * https://developers.facebook.com/docs/messenger-platform/webhook-reference/authentication
- *
- */
-function receivedAuthentication(event) {
-  console.console.log('Received authentication!');
-
-  var senderID = event.sender.id;
-
-  // We retrieve the user's current session, or create one if it doesn't exist
-  // This is needed for our bot to figure out the conversation history
-  const sessionId = findOrCreateSession(senderID);
-  sessions[sessionId] = {};
-
-  sendTextMessage(
-    senderID,
-    'Welcome to Flight Bot! I can help you to find flights for you!'
-  );
-}
 
 function verifyRequestSignature(req, res, buf) {
   var signature = req.headers['x-hub-signature'];
@@ -283,8 +122,19 @@ app.get('/policy', function (req, res) {
 });
 
 var server = app.listen(process.env.PORT || 5050, function () {
-  var host = server.address().address;
-  var port = server.address().port;
+  if (!server) {
+    console.log('Failed to start application...');
+    return;
+  }
 
-  console.log('App is listening at http://%s:%s', host, port);
+  let addressStr = '';
+  if (server.address() && (typeof server.address()) == 'string') {
+    const address = server.address() as string;
+    addressStr = `http:\\\\${address}`;
+  } else if (server.address()) {
+    const address = server.address() as any;
+    addressStr = `http:\\\\${address.address}:${address.port}`;
+  }
+
+  console.log('App is listening at http://%s', addressStr);
 });
