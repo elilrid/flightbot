@@ -18,11 +18,9 @@ const PAGE_ACCESS_TOKEN = ;
 const VALIDATION_TOKEN = config.get('validationToken');
 const APP_SECRET = config.get('appSecret');
 
-const SKYSCANNER_KEY = config.get('skyscannerApiKey');
 
 console.log('validation token is ' + VALIDATION_TOKEN);
 console.log('page access token is ' + PAGE_ACCESS_TOKEN);
-console.log('skyscanner key is ' + SKYSCANNER_KEY);
 
 const entityValue = (entities, entity, order) => {
   const val =
