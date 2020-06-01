@@ -21,7 +21,7 @@ const APP_SECRET = config.get('appSecret') as string;
 
 console.log('validation token is ' + VALIDATION_TOKEN);
 
-const entityValue = (entities, entity, order) => {
+const entityValue = (entities: any, entity: any, order: any) => {
   const val =
     entities &&
     entities[entity] &&
