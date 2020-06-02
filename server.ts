@@ -106,7 +106,7 @@ app.get('/policy', function (req, res) {
   });
 });
 
-var server = app.listen(process.env.PORT || 5050, function () {
+var server = app.listen(process.env.PORT || 8080, function () {
   if (!server) {
     console.log('Failed to start application...');
     return;
