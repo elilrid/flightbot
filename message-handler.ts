@@ -2,7 +2,6 @@ import config from 'config';
 import request from 'then-request';
 import { FacebookSession } from './models/facebook-session.model';
 import { MessageData } from './models/message-data.model';
-import { formatDate } from './util';
 import { FlightWit } from './wit/flight-wit';
 
 export class MessageHandler {
@@ -128,43 +127,6 @@ export class MessageHandler {
       'Welcome to Flight Bot! I can help you to find flights for you!'
     );
   }
-
-  private formatFlightMessage(flightInfo: any): string {
-    var i,
-      toReturn = '';
-    var anyFlight = false;
-    for (i = 0; i < flightInfo.Quotes.length; i++) {
-      var quote = flightInfo.Quotes[i];
-
-      console.log(JSON.stringify(quote));
-      toReturn += '\n';
-
-      toReturn += quote.MinPrice + 'TL - ';
-
-      if (quote.Direct) {
-        toReturn += 'Direct Flight';
-      } else {
-        toReturn += 'Not a Direct Flight';
-      }
-
-      toReturn += ' - ';
-      if (quote.hasOwnProperty('OutboundLeg')) {
-        anyFlight = true;
-        toReturn +=
-          'Time : ' + formatDate(new Date(quote.OutboundLeg.DepartureDate));
-      } else if (quote.hasOwnProperty('InboundLeg')) {
-        anyFlight = true;
-        toReturn +=
-          'Time : ' + formatDate(new Date(quote.InboundLeg.DepartureDate));
-      }
-    }
-    if (anyFlight) {
-      return toReturn;
-    } else {
-      return 'There is no flight';
-    }
-  }
-
 
   /*
    * Send a text message using the Send API.

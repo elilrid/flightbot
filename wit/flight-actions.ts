@@ -1,59 +1,64 @@
 import { MessageHandler } from "../message-handler";
-import { getLocationCode } from "../util";
+import { SkyScanner } from "../skyscanner";
+import { entityValue, formatDate, formatDateForSkyScanner, formatFlightMessage, getLocationCode } from "../util";
 
 // Our bot actions
 export const actions = {
-  send({ sessionId }, { text }) {
+  send(session: { sessionId: string }, message: { text: string }) {
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
-    const recipientId = MessageHandler.Instance.getSession(sessionId)?.fbid;
+    const recipientId = MessageHandler.Instance.getSession(Number.parseInt(session.sessionId))?.fbid;
     if (recipientId) {
       // Yay, we found our recipient!
       // Let's forward our bot response to her.
       // We return a promise to let our bot know when we're done sending
-      return MessageHandler.Instance.sendTextMessage(recipientId, text);
+      return MessageHandler.Instance.sendTextMessage(recipientId, message.text);
     } else {
-      console.error("Oops! Couldn't find user for session:", sessionId);
+      console.error("Oops! Couldn't find user for session:", session.sessionId);
       // Giving the wheel back to our bot
       return Promise.resolve();
     }
   },
-  findFlights({ context, entities }) {
+  findFlights(res: { context: any, entities: any }) {
+    const context = res.context;
+    const entities = res.entities;
+
     delete context.foundFlights;
 
-    let sessionId = context.sessionId;
-    let oldContext = sessions[sessionId].context;
+    let sessionId = res.context.sessionId;
+    let oldContext = MessageHandler.Instance.getSession(Number.parseInt(sessionId))?.context;
+    if (oldContext) {
+      const oldDeparture = oldContext.departure;
+      const oldArrival = oldContext.arrival;
+      const oldDate = oldContext.date;
 
-    let oldDeparture = oldContext.departure;
-    let oldArrival = oldContext.arrival;
-    let oldDate = oldContext.date;
-
-    if (oldDeparture == null && entityValue(entities, 'departure', 1) == null) {
-      context.missingDeparture = true;
-    } else if (oldDeparture == null) {
-      context.departure = entityValue(entities, 'departure', 1);
-      delete context.missingDeparture;
-    } else {
-      context.departure = oldDeparture;
-      delete context.missingDeparture;
-    }
-    if (oldArrival == null && entityValue(entities, 'arrival', 1) == null) {
-      context.missingArrival = true;
-    } else if (oldArrival == null) {
-      context.arrival = entityValue(entities, 'arrival', 1);
-      delete context.missingArrival;
-    } else {
-      context.arrival = oldArrival;
-      delete context.missingArrival;
-    }
-    if (oldDate == null && entityValue(entities, 'datetime', 1) == null) {
-      context.missingDate = true;
-    } else if (oldDate == null) {
-      context.date = entityValue(entities, 'datetime', 1);
-      delete context.missingDate;
-    } else {
-      context.date = oldDate;
-      delete context.missingDate;
+      if (oldDeparture == null && entityValue(entities, 'departure', 1) == null) {
+        context.missingDeparture = true;
+      } else if (oldDeparture == null) {
+        context.departure = entityValue(entities, 'departure', 1);
+        delete context.missingDeparture;
+      } else {
+        context.departure = oldDeparture;
+        delete context.missingDeparture;
+      }
+      if (oldArrival == null && entityValue(entities, 'arrival', 1) == null) {
+        context.missingArrival = true;
+      } else if (oldArrival == null) {
+        context.arrival = entityValue(entities, 'arrival', 1);
+        delete context.missingArrival;
+      } else {
+        context.arrival = oldArrival;
+        delete context.missingArrival;
+      }
+      if (oldDate == null && entityValue(entities, 'datetime', 1) == null) {
+        context.missingDate = true;
+      } else if (oldDate == null) {
+        context.date = entityValue(entities, 'datetime', 1);
+        delete context.missingDate;
+      } else {
+        context.date = oldDate;
+        delete context.missingDate;
+      }
     }
 
     if (
@@ -76,14 +81,14 @@ export const actions = {
       var err, detailInformation;
       var done = false;
 
-      skyscanner.setApiKey(SKYSCANNER_KEY);
+      const skyscanner = SkyScanner.Instance;
       console.log('syscanner api key is set');
       console.log('getting departure');
-      let departureCode = getLocationCode(skyscanner.getLocation(departure));
+      let departureCode = getLocationCode(skyscanner.getLocations(departure));
 
       console.log('Departure Code : ' + departureCode);
 
-      let arrivalCode = getLocationCode(skyscanner.getLocation(arrival));
+      let arrivalCode = getLocationCode(skyscanner.getLocations(arrival));
 
       console.log('Arrival Code : ' + arrivalCode);
 

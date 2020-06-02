@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "tsc --outDir dist && node dist/server.js",
+    "start": "npm i && tsc --outDir dist && node dist/server.js",
     "tsc": "tsc"
   },
   "dependencies": {

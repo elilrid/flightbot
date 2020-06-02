@@ -1,7 +1,20 @@
-import request, { FormData } from 'then-request';
+import config from 'config';
+import { FormData } from 'then-request';
+import request from 'then-request';
 import util from 'util';
 
 export class SkyScanner {
+
+  private static _instance: SkyScanner;
+
+  public static get Instance(): SkyScanner {
+    if (!this._instance) {
+      this._instance = new SkyScanner();
+      this._instance.setApiKey(config.get('skyscannerApiKey'));
+    }
+    return this._instance;
+  }
+
   private apiKey: string = '';
   setApiKey(key: string): void {
     this.apiKey = key;
@@ -21,7 +34,7 @@ export class SkyScanner {
 
     return request('GET', url).then(response => {
       var data = JSON.parse(response.getBody().toString());
-      return data.Places.map(loc => {
+      return data.Places.map((loc: any) => {
         return {
           id: loc.PlaceId,
           name: loc.PlaceName
@@ -75,26 +88,26 @@ export class SkyScanner {
     return request('POST', 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0', options).then(session => {
       return pull(session.url, pull, delay, fastMode).then(response => {
         var data = JSON.parse(response.getBody());
-        var toReturn = data.Itineraries.map(itin => {
-          var outboundLeg = data.Legs.filter(leg => leg.Id === itin.OutboundLegId)[0];
-          var inboundLeg = data.Legs.filter(leg => leg.Id === itin.InboundLegId)[0];
+        var toReturn = data.Itineraries.map((itin: any) => {
+          var outboundLeg = data.Legs.filter((leg: any) => leg.Id === itin.OutboundLegId)[0];
+          var inboundLeg = data.Legs.filter((leg: any) => leg.Id === itin.InboundLegId)[0];
 
-          var segments = outboundLeg.SegmentIds.concat(inboundLeg.SegmentIds).map((segmentId, index) => {
-            var segment = data.Segments.filter(seg => seg.Id === segmentId)[0];
-            var departAirport = data.Places.filter(place => place.Id === segment.OriginStation)[0];
-            var arriveAirport = data.Places.filter(place => place.Id === segment.DestinationStation)[0];
+          var segments = outboundLeg.SegmentIds.concat(inboundLeg.SegmentIds).map((segmentId: any, index: number) => {
+            var segment = data.Segments.filter((seg: any) => seg.Id === segmentId)[0];
+            var departAirport = data.Places.filter((place: any) => place.Id === segment.OriginStation)[0];
+            var arriveAirport = data.Places.filter((place: any) => place.Id === segment.DestinationStation)[0];
 
             var departCity = !departAirport.ParentId
               ? departAirport
-              : data.Places.filter(place => place.Id === departAirport.ParentId)[0];
+              : data.Places.filter((place: any) => place.Id === departAirport.ParentId)[0];
 
             var arriveCity = !arriveAirport.ParentId
               ? arriveAirport
-              : data.Places.filter(place => place.Id === arriveAirport.ParentId)[0];
+              : data.Places.filter((place: any) => place.Id === arriveAirport.ParentId)[0];
 
             var carriers = [
-              ...response.data.Carriers.filter(carry => carry.Id === segment.OperatingCarrier),
-              ...response.data.Carriers.filter(carry => carry.Id === segment.Carrier)
+              ...response.data.Carriers.filter((carry: any) => carry.Id === segment.OperatingCarrier),
+              ...response.data.Carriers.filter((carry: any) => carry.Id === segment.Carrier)
             ];
 
             return {

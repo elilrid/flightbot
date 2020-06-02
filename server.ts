@@ -19,19 +19,6 @@ const APP_SECRET = config.get('appSecret') as string;
 
 console.log('validation token is ' + VALIDATION_TOKEN);
 
-const entityValue = (entities: any, entity: any, order: any) => {
-  const val =
-    entities &&
-    entities[entity] &&
-    Array.isArray(entities[entity]) &&
-    entities[entity].length > 0 &&
-    entities[entity][order - 1].value;
-  if (!val) {
-    return null;
-  }
-  return typeof val === 'object' ? val.value : val;
-};
-
 //webhook endpoints
 app.get('/flights', function (req, res) {
   if (

@@ -95,3 +95,52 @@ export const getLocationCode = (data: any) => {
   }
   return code;
 }
+
+export const entityValue = (entities: any, entity: string, order: number) => {
+  const val =
+    entities &&
+    entities[entity] &&
+    Array.isArray(entities[entity]) &&
+    entities[entity].length >= order &&
+    entities[entity][order - 1].value;
+  if (!val) {
+    return null;
+  }
+  return typeof val === 'object' ? val.value : val;
+};
+
+export const formatFlightMessage = (flightInfo: any): string => {
+  var i,
+    toReturn = '';
+  var anyFlight = false;
+  for (i = 0; i < flightInfo.Quotes.length; i++) {
+    var quote = flightInfo.Quotes[i];
+
+    console.log(JSON.stringify(quote));
+    toReturn += '\n';
+
+    toReturn += quote.MinPrice + 'TL - ';
+
+    if (quote.Direct) {
+      toReturn += 'Direct Flight';
+    } else {
+      toReturn += 'Not a Direct Flight';
+    }
+
+    toReturn += ' - ';
+    if (quote.hasOwnProperty('OutboundLeg')) {
+      anyFlight = true;
+      toReturn +=
+        'Time : ' + formatDate(new Date(quote.OutboundLeg.DepartureDate));
+    } else if (quote.hasOwnProperty('InboundLeg')) {
+      anyFlight = true;
+      toReturn +=
+        'Time : ' + formatDate(new Date(quote.InboundLeg.DepartureDate));
+    }
+  }
+  if (anyFlight) {
+    return toReturn;
+  } else {
+    return 'There is no flight';
+  }
+}
