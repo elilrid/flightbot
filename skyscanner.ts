@@ -1,4 +1,5 @@
-import request, { FormData } from 'then-request';
+import { FormData } from 'then-request';
+import request from 'then-request';
 import util from 'util';
 import { Config } from './config';
 
