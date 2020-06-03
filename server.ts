@@ -5,6 +5,7 @@ import { Config } from './config';
 import { MessageHandler } from './message-handler';
 
 var app = express();
+app.set('view engine', 'ejs');
 app.use(
   bodyParser.json({
     verify: verifyRequestSignature,
