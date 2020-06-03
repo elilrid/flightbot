@@ -1,7 +1,6 @@
-import config from 'config';
-import { FormData } from 'then-request';
-import request from 'then-request';
+import request, { FormData } from 'then-request';
 import util from 'util';
+import { Config } from './config';
 
 export class SkyScanner {
 
@@ -10,7 +9,7 @@ export class SkyScanner {
   public static get Instance(): SkyScanner {
     if (!this._instance) {
       this._instance = new SkyScanner();
-      this._instance.setApiKey(config.get('skyscannerApiKey'));
+      this._instance.setApiKey(Config.getSkyscannerApiKey());
     }
     return this._instance;
   }

@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
-import config from 'config';
 import crypto from 'crypto';
 import express from 'express';
+import { Config } from './config';
 import { MessageHandler } from './message-handler';
 
 var app = express();
@@ -13,8 +13,8 @@ app.use(
 app.use(express.static('public'));
 
 //tokens for facebook
-const VALIDATION_TOKEN = config.get('validationToken') as string;
-const APP_SECRET = config.get('appSecret') as string;
+const VALIDATION_TOKEN = Config.getValidationToken();
+const APP_SECRET = Config.getAppSecret();
 
 
 console.log('validation token is ' + VALIDATION_TOKEN);

@@ -1,5 +1,5 @@
-import config from 'config';
 import request from 'then-request';
+import { Config } from './config';
 import { FacebookSession } from './models/facebook-session.model';
 import { MessageData } from './models/message-data.model';
 import { FlightWit } from './wit/flight-wit';
@@ -158,7 +158,7 @@ export class MessageHandler {
     request('POST', 'https://graph.facebook.com/v2.6/me/messages',
       {
         qs: {
-          access_token: config.get('pageAccessToken'),
+          access_token: Config.getPageAccessToken(),
         },
         json: messageData,
       }).then(response => {
